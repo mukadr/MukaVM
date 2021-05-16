@@ -49,15 +49,13 @@ namespace MukaVM.IR.Graph
 
     public class BasicBlock
     {
-        private static int _number = 1;
-
         public string Name { get; set; }
 
         public List<Instruction> Instructions { get; set; } = new List<Instruction>();
 
-        public BasicBlock()
+        public BasicBlock(int number)
         {
-            Name = "BB" + _number++;
+            Name = "BB" + number;
         }
 
         public BasicBlock(string name)
@@ -85,7 +83,8 @@ namespace MukaVM.IR.Graph
         {
             var graph = new Function(function.Name);
 
-            var bb = new BasicBlock();
+            var n = 1;
+            var bb = new BasicBlock(n);
             foreach (var instruction in function.Instructions)
             {
                 if (instruction is IR.Label label)
@@ -93,7 +92,7 @@ namespace MukaVM.IR.Graph
                     if (bb.Instructions.Count > 0)
                     {
                         graph.BasicBlocks.Add(bb);
-                        bb = new BasicBlock();
+                        bb = new BasicBlock(++n);
                     }
 
                     // Update old labels to point to current basic block
@@ -113,7 +112,7 @@ namespace MukaVM.IR.Graph
                     if (instruction is Jmp || instruction is Ret)
                     {
                         graph.BasicBlocks.Add(bb);
-                        bb = new BasicBlock();
+                        bb = new BasicBlock(++n);
                     }
                 }
             }
