@@ -7,6 +7,15 @@ namespace MukaVM.Test.Graph
     public class CfgTest
     {
         [Fact]
+        public void DoesNotGeneratesBasicBlocksForEmptyFunction()
+        {
+            var empty = new Function("empty", new List<Instruction>());
+            var cfg = IR.Graph.Convert.ToControlFlowGraph(empty);
+            var expectedCfg = new IR.Graph.Function(empty.Name);
+            Assert.Equal(expectedCfg.ToString(), cfg.ToString());
+        }
+
+        [Fact]
         public void GeneratesMoreThanOneBasicBlockForFunctionWithLabels()
         {
             var x = new Var("x");
