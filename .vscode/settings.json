@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "**/[bB]in": true,
+    "**/[oO]bj": true
+  }
+}
