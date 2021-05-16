@@ -16,6 +16,33 @@ namespace MukaVM.Test.Graph
         }
 
         [Fact]
+        public void GeneratesSingleBasicBlockForFunctionWithoutLabels()
+        {
+            var x = new Var("x");
+            var y = new Var("y");
+
+            var withoutLabels = new Function(
+                "withoutLabels",
+                new List<Instruction>
+                {
+                    new Add(x, new Int(0), new Int(10)),
+                    new Add(y, x, x),
+                    new Ret()
+                });
+
+            var cfg = IR.Graph.Convert.ToControlFlowGraph(withoutLabels);
+
+            var bb = new IR.Graph.BasicBlock("BB1");
+            bb.Instructions.Add(new Add(x, new Int(0), new Int(10)));
+            bb.Instructions.Add(new Add(y, x, x));
+            bb.Instructions.Add(new Ret());
+
+            var expectedCfg = new IR.Graph.Function(withoutLabels.Name, new List<IR.Graph.BasicBlock> { bb });
+
+            Assert.Equal(expectedCfg.ToString(), cfg.ToString());
+        }
+
+        [Fact]
         public void GeneratesMoreThanOneBasicBlockForFunctionWithLabels()
         {
             var x = new Var("x");
