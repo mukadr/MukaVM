@@ -2,7 +2,7 @@ namespace MukaVM.IR
 {
     public abstract class Instruction { }
 
-    public sealed class Add : Instruction
+    public class Add : Instruction
     {
         public Var Target { get; set; }
         public Value Value1 { get; set; }
@@ -15,14 +15,7 @@ namespace MukaVM.IR
             Value2 = value2;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Add add &&
-               add.Target.Equals(Target) &&
-               add.Value1.Equals(Value1) &&
-               add.Value2.Equals(Value2);
-
-        public override int GetHashCode()
-            => Target.GetHashCode() ^ Value1.GetHashCode() ^ Value2.GetHashCode();
+        public override string ToString() => Target + " = " + Value1 + " + " + Value2;
     }
 
     public class Label : Instruction
@@ -34,13 +27,7 @@ namespace MukaVM.IR
             Name = name;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Label label &&
-               label.GetType() == typeof(Label) &&
-               label.Name == Name;
-
-        public override int GetHashCode()
-            => Name.GetHashCode();
+        public override string ToString() => Name;
     }
 
     public class Jmp : Instruction
@@ -52,16 +39,10 @@ namespace MukaVM.IR
             Target = target;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Jmp jmp &&
-               jmp.GetType() == typeof(Jmp) &&
-               jmp.Target.Equals(Target);
-
-        public override int GetHashCode()
-            => Target.GetHashCode();
+        public override string ToString() => "JMP " + Target;
     }
 
-    public sealed class Jg : Jmp
+    public class Jg : Jmp
     {
         public Value Value1 { get; set; }
         public Value Value2 { get; set; }
@@ -73,22 +54,11 @@ namespace MukaVM.IR
             Value2 = value2;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Jg jg &&
-               jg.Target.Equals(Target) &&
-               jg.Value1.Equals(Value1) &&
-               jg.Value2.Equals(Value2);
-
-        public override int GetHashCode()
-            => Target.GetHashCode() ^ Value1.GetHashCode() ^ Value2.GetHashCode();
+        public override string ToString() => "JG " + Value1 + ", " + Value2 + ", " + Target;
     }
 
-    public sealed class Ret : Instruction
+    public class Ret : Instruction
     {
-        public override bool Equals(object? obj)
-            => obj is Ret;
-
-        public override int GetHashCode()
-            => base.GetHashCode();
+        public override string ToString() => "RET";
     }
 }

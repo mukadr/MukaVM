@@ -11,16 +11,10 @@ namespace MukaVM.IR
             Name = name;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Var var &&
-               var.GetType() == typeof(Var) &&
-               var.Name == Name;
-
-        public override int GetHashCode()
-            => Name.GetHashCode();
+       public override string ToString() => Name;
     }
 
-    public sealed class Int : Value
+    public class Int : Value
     {
         public int Value { get; set; }
 
@@ -29,15 +23,10 @@ namespace MukaVM.IR
             Value = value;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Int i &&
-               i.Value == Value;
-
-        public override int GetHashCode()
-            => Value.GetHashCode();
+        public override string ToString() => Value.ToString();
     }
 
-    public sealed class Str : Value
+    public class Str : Value
     {
         public string Value { get; set; }
 
@@ -46,11 +35,6 @@ namespace MukaVM.IR
             Value = value;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Str s &&
-               s.Value == Value;
-
-        public override int GetHashCode()
-            => Value.GetHashCode();
+        public override string ToString() => "\"" + Value + "\"";
     }
 }

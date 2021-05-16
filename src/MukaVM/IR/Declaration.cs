@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 
 namespace MukaVM.IR
 {
-    public sealed class Function
+    public class Function
     {
         public string Name { get; set; }
         public List<Instruction> Instructions { get; set; }
@@ -14,12 +14,18 @@ namespace MukaVM.IR
             Instructions = instructions;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Function f &&
-               f.Name == Name &&
-               f.Instructions.SequenceEqual(Instructions);
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
 
-        public override int GetHashCode()
-            => Name.GetHashCode() ^ Instructions.GetHashCode();
+            sb.AppendLine("FUNCTION " + Name);
+            foreach (var instruction in Instructions)
+            {
+                sb.AppendLine("  " + instruction.ToString());
+            }
+            sb.AppendLine("END");
+
+            return sb.ToString();
+        }
     }
 }

@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace MukaVM.IR.Graph
 {
-    public sealed class Function
+    public class Function
     {
         public string Name { get; set; }
 
@@ -20,16 +21,22 @@ namespace MukaVM.IR.Graph
             BasicBlocks = basicBlocks;
         }
 
-        public override bool Equals(object? obj)
-            => obj is Function f &&
-               f.Name == Name &&
-               f.BasicBlocks.SequenceEqual(BasicBlocks);
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
 
-        public override int GetHashCode()
-            => BasicBlocks.GetHashCode();
+            sb.AppendLine("FUNCTION " + Name);
+            foreach (var bb in BasicBlocks)
+            {
+                sb.AppendLine(bb.ToString());
+            }
+            sb.AppendLine("END");
+
+            return sb.ToString();
+        }
     }
 
-    public sealed class Label : IR.Label
+    public class Label : IR.Label
     {
         public BasicBlock BasicBlock { get; set; }
 
@@ -38,17 +45,9 @@ namespace MukaVM.IR.Graph
         {
             BasicBlock = basicBlock;
         }
-
-        public override bool Equals(object? obj)
-            => obj is Label label &&
-               label.Name == Name &&
-               BasicBlock.Equals(BasicBlock);
-
-        public override int GetHashCode()
-            => base.GetHashCode() ^ BasicBlock.GetHashCode();
     }
 
-    public sealed class BasicBlock
+    public class BasicBlock
     {
         private static int _number = 1;
 
@@ -66,13 +65,18 @@ namespace MukaVM.IR.Graph
             Name = name;
         }
 
-        public override bool Equals(object? obj)
-            => obj is BasicBlock bb &&
-               bb.Name == Name &&
-               bb.Instructions.SequenceEqual(Instructions);
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
 
-        public override int GetHashCode()
-            => Name.GetHashCode() ^ Instructions.GetHashCode();
+            sb.AppendLine(Name);
+            foreach (var instruction in Instructions)
+            {
+                sb.AppendLine("  " + instruction.ToString());
+            }
+
+            return sb.ToString();
+        }
     }
 
     public static class Convert

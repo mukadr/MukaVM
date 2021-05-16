@@ -27,6 +27,8 @@ namespace MukaVM.Test.Graph
                     new Ret()
                 });
 
+            var cfg = IR.Graph.Convert.ToControlFlowGraph(f1);
+
             var bb1 = new IR.Graph.BasicBlock("BB1");
             var bb2 = new IR.Graph.BasicBlock("BB2");
             var bb3 = new IR.Graph.BasicBlock("BB3");
@@ -71,7 +73,7 @@ namespace MukaVM.Test.Graph
                     bb4
                 });
 
-            Assert.Equal(expectedCfg, IR.Graph.Convert.ToControlFlowGraph(f1));
+            Assert.Equal(expectedCfg.ToString(), cfg.ToString());
         }
     }
 }
