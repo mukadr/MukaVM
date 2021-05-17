@@ -29,7 +29,7 @@ namespace MukaVM.IR
         }
     }
 
-    public class CfgLabel : IR.Label
+    public class CfgLabel : Label
     {
         public BasicBlock BasicBlock { get; set; }
 
