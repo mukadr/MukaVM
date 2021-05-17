@@ -90,13 +90,12 @@ namespace MukaVM.IR.Graph
                         bb = new BasicBlock(++n);
                     }
 
-                    // Update old labels to point to current basic block
-                    var newLabel = new Label(bb);
+                    var startOfBB = new Label(bb);
                     foreach (var fi in function.Instructions)
                     {
                         if (fi is Jmp jmp && jmp.Target == label)
                         {
-                            jmp.Target = newLabel;
+                            jmp.Target = startOfBB;
                         }
                     }
                 }
