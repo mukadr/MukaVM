@@ -7,5 +7,5 @@ This is a hobby project that aims to compile a simple intermediate language (IR)
 ## Roadmap
 
 - [x] Split instructions into basic blocks
-- [ ] Connect basic blocks
+- [x] Connect basic blocks
 - [ ] Convert variables into SSA form

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace MukaVM.IR
@@ -7,7 +8,7 @@ namespace MukaVM.IR
     {
         public string Name { get; set; }
 
-        public List<BasicBlock> BasicBlocks { get; set; } = new List<BasicBlock>();
+        public List<BasicBlock> BasicBlocks { get; set; } = new();
 
         public CfgFunction(string name)
         {
@@ -44,7 +45,11 @@ namespace MukaVM.IR
     {
         public string Name { get; set; }
 
-        public List<Instruction> Instructions { get; set; } = new List<Instruction>();
+        public List<Instruction> Instructions { get; set; } = new();
+
+        public SortedList<string, BasicBlock> ReachedBy { get; set; } = new();
+
+        public SortedList<string, BasicBlock> FollowedBy { get; set; } = new();
 
         public BasicBlock(int number)
         {
@@ -61,10 +66,22 @@ namespace MukaVM.IR
             var sb = new StringBuilder();
 
             sb.AppendLine(Format.Indent(1) + Name + " {");
+
+            if (ReachedBy.Count > 0)
+            {
+                sb.AppendLine(Format.Indent(2) + "<" + string.Join(", ", ReachedBy.Select(kv => kv.Key)) + ">");
+            }
+
             foreach (var instruction in Instructions)
             {
                 sb.AppendLine(Format.Indent(2) + instruction.ToString());
             }
+
+            if (FollowedBy.Count > 0)
+            {
+                sb.AppendLine(Format.Indent(2) + "<" + string.Join(", ", FollowedBy.Select(kv => kv.Key)) + ">");
+            }
+
             sb.AppendLine(Format.Indent(1) + "}");
 
             return sb.ToString();

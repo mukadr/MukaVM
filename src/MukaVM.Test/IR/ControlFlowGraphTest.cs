@@ -69,15 +69,21 @@ namespace MukaVM.Test.IR
                     BB1 {
                         x = 0 + 1
                         IF x > 0: BB3
+                        <BB2, BB3>
                     }
                     BB2 {
+                        <BB1>
                         x = x + 2
                         JMP BB4
+                        <BB4>
                     }
                     BB3 {
+                        <BB1>
                         x = x + 5
+                        <BB4>
                     }
                     BB4 {
+                        <BB2, BB3>
                         RET
                     }
                 }";

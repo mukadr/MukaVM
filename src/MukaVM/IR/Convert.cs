@@ -1,9 +1,19 @@
+using System.Linq;
 
 namespace MukaVM.IR
 {
     public static class Convert
     {
         public static CfgFunction ToControlFlowGraph(Function function)
+        {
+            CfgFunction cfg = BuildControlFlowGraph(function);
+
+            ConnectControlFlowGraph(cfg);
+
+            return cfg;
+        }
+
+        private static CfgFunction BuildControlFlowGraph(Function function)
         {
             var cfg = new CfgFunction(function.Name);
 
@@ -46,6 +56,39 @@ namespace MukaVM.IR
             }
 
             return cfg;
+        }
+
+        private static void ConnectControlFlowGraph(CfgFunction cfg)
+        {
+            BasicBlock? previous = null;
+
+            foreach (var bb in cfg.BasicBlocks)
+            {
+                if (previous is not null)
+                {
+                    previous.FollowedBy.Add(bb.Name, bb);
+                    bb.ReachedBy.Add(previous.Name, previous);
+                    previous = null;
+                }
+
+                if (bb.Instructions.Last() is Jmp jmp)
+                {
+                    var target = ((CfgLabel)jmp.Target).BasicBlock;
+
+                    bb.FollowedBy.Add(target.Name, target);
+                    target.ReachedBy.Add(bb.Name, bb);
+
+                    if (jmp.GetType() != typeof(Jmp))
+                    {
+                        // Conditional JMP follows next BB
+                        previous = bb;
+                    }
+                }
+                else
+                {
+                    previous = bb;
+                }
+            }
         }
     }
 }
