@@ -18,12 +18,12 @@ namespace MukaVM.IR
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("FUNCTION " + Name);
+            sb.AppendLine("FUNCTION " + Name + " {");
             foreach (var instruction in Instructions)
             {
                 sb.AppendLine("  " + instruction.ToString());
             }
-            sb.AppendLine("END");
+            sb.AppendLine("}");
 
             return sb.ToString();
         }

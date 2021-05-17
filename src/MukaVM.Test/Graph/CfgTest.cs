@@ -7,22 +7,24 @@ namespace MukaVM.Test.Graph
     public class CfgTest
     {
         [Fact]
-        public void DoesNotGeneratesBasicBlocksForEmptyFunction()
+        public void EmptyFunction_Generates_EmptyCfg()
         {
-            var empty = new Function("empty", new List<Instruction>());
-            var cfg = IR.Graph.Convert.ToControlFlowGraph(empty);
-            var expectedCfg = new IR.Graph.Function(empty.Name);
-            Assert.Equal(expectedCfg.ToString(), cfg.ToString());
+            var function = new Function("f", new List<Instruction>());
+
+            const string expected = @"
+                FUNCTION f {
+                }";
+
+            Util.AssertFunctionToCfgEquals(expected, function);
         }
 
         [Fact]
-        public void GeneratesSingleBasicBlockForFunctionWithoutLabels()
+        public void SimpleFunction_Generates_One_BasicBlock()
         {
             var x = new Var("x");
             var y = new Var("y");
-
-            var withoutLabels = new Function(
-                "withoutLabels",
+            var function = new Function(
+                "f",
                 new List<Instruction>
                 {
                     new Add(x, new Int(0), new Int(10)),
@@ -30,73 +32,57 @@ namespace MukaVM.Test.Graph
                     new Ret()
                 });
 
-            var cfg = IR.Graph.Convert.ToControlFlowGraph(withoutLabels);
+            const string expected = @"
+                FUNCTION f {
+                  BB1 {
+                    x = 0 + 10
+                    y = x + x
+                    RET
+                  }
+                }";
 
-            var bb = new IR.Graph.BasicBlock("BB1");
-            bb.Instructions.Add(new Add(x, new Int(0), new Int(10)));
-            bb.Instructions.Add(new Add(y, x, x));
-            bb.Instructions.Add(new Ret());
-
-            var expectedCfg = new IR.Graph.Function(withoutLabels.Name, new List<IR.Graph.BasicBlock> { bb });
-
-            Assert.Equal(expectedCfg.ToString(), cfg.ToString());
+            Util.AssertFunctionToCfgEquals(expected, function);
         }
 
         [Fact]
-        public void GeneratesMoreThanOneBasicBlockForFunctionWithLabels()
+        public void FunctionWithLabels_Generates_MoreThanOne_BasicBlock()
         {
             var x = new Var("x");
-            var gt0 = new Label("gt0");
+            var add5 = new Label("add5");
             var exit = new Label("exit");
-            var simple1 = new Function(
-                "simple1",
+            var function = new Function(
+                "f",
                 new List<Instruction>
                 {
                     new Add(x, new Int(0), new Int(1)),
-                    new Jg(x, new Int(0), gt0),
+                    new Jg(x, new Int(0), add5),
                     new Add(x, x, new Int(2)),
                     new Jmp(exit),
-                    gt0,
+                    add5,
                     new Add(x, x, new Int(5)),
                     exit,
                     new Ret()
                 });
 
-            var cfg = IR.Graph.Convert.ToControlFlowGraph(simple1);
+            const string expected = @"
+                FUNCTION f {
+                  BB1 {
+                    x = 0 + 1
+                    JG x, 0, BB3
+                  }
+                  BB2 {
+                    x = x + 2
+                    JMP BB4
+                  }
+                  BB3 {
+                    x = x + 5
+                  }
+                  BB4 {
+                    RET
+                  }
+                }";
 
-            var bb1 = new IR.Graph.BasicBlock("BB1");
-            var bb2 = new IR.Graph.BasicBlock("BB2");
-            var bb3 = new IR.Graph.BasicBlock("BB3");
-            var bb4 = new IR.Graph.BasicBlock("BB4");
-            
-            var bb3Label = new IR.Graph.Label(bb3);
-            var bb4Label = new IR.Graph.Label(bb4);
-
-            // BB1
-            bb1.Instructions.Add(new Add(x, new Int(0), new Int(1)));
-            bb1.Instructions.Add(new Jg(x, new Int(0), bb3Label));
-
-            // BB2
-            bb2.Instructions.Add(new Add(x, x, new Int(2)));
-            bb2.Instructions.Add(new Jmp(bb4Label));
-
-            // BB3
-            bb3.Instructions.Add(new Add(x, x, new Int(5)));
-
-            // BB4
-            bb4.Instructions.Add(new Ret());
-
-            var expectedCfg = new IR.Graph.Function(
-                simple1.Name,
-                new List<IR.Graph.BasicBlock>
-                {
-                    bb1,
-                    bb2,
-                    bb3,
-                    bb4
-                });
-
-            Assert.Equal(expectedCfg.ToString(), cfg.ToString());
+            Util.AssertFunctionToCfgEquals(expected, function);
         }
     }
 }

@@ -25,12 +25,12 @@ namespace MukaVM.IR.Graph
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("FUNCTION " + Name);
+            sb.AppendLine("FUNCTION " + Name + " {");
             foreach (var bb in BasicBlocks)
             {
                 sb.AppendLine(bb.ToString());
             }
-            sb.AppendLine("END");
+            sb.AppendLine("}");
 
             return sb.ToString();
         }
@@ -67,11 +67,12 @@ namespace MukaVM.IR.Graph
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Name);
+            sb.AppendLine("  " + Name + " {");
             foreach (var instruction in Instructions)
             {
-                sb.AppendLine("  " + instruction.ToString());
+                sb.AppendLine("    " + instruction.ToString());
             }
+            sb.AppendLine("  }");
 
             return sb.ToString();
         }
