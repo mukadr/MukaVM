@@ -6,9 +6,9 @@ namespace MukaVM.Test
 {
     internal static class Util
     {
-        internal static void AssertControlFlowGraphEquals(string expected, Function function)
+        internal static void AssertControlFlowGraphEquals(string expected, Function actual)
         {
-            AssertSourceEquals(expected, Convert.ToControlFlowGraph(function).ToString());
+            AssertSourceEquals(expected, Convert.ToControlFlowGraph(actual).ToString());
         }
 
         internal static void AssertSourceEquals(string expected, string actual)
