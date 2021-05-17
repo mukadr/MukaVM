@@ -8,7 +8,7 @@ namespace MukaVM.Test
     {
         internal static void AssertFunctionToCfgEquals(string expected, Function function)
         {
-            Assert.Equal(ReindentSource(expected), ReindentSource(IR.Graph.Convert.ToControlFlowGraph(function).ToString()));
+            AssertSourceEquals(expected, IR.Graph.Convert.ToControlFlowGraph(function).ToString());
         }
 
         internal static void AssertSourceEquals(string expected, string actual)
