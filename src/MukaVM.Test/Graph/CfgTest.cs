@@ -68,7 +68,7 @@ namespace MukaVM.Test.Graph
                 FUNCTION f {
                   BB1 {
                     x = 0 + 1
-                    JG x, 0, BB3
+                    IF x > 0: BB3
                   }
                   BB2 {
                     x = x + 2

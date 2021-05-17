@@ -54,7 +54,7 @@ namespace MukaVM.IR
             Value2 = value2;
         }
 
-        public override string ToString() => "JG " + Value1 + ", " + Value2 + ", " + Target;
+        public override string ToString() => "IF " + Value1 + " > " + Value2 + ": " + Target;
     }
 
     public class Ret : Instruction
