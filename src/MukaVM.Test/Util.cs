@@ -23,7 +23,7 @@ namespace MukaVM.Test
             var atStartOfSource = true;
             var atStartOfLine = false;
             var foundSpaces = false;
-            var indent = 0;
+            var indentLevel = 0;
             var insideString = false;
 
             for (var i = 0; i < source.Length; i++)
@@ -71,15 +71,12 @@ namespace MukaVM.Test
 
                     if (source[i] == '}')
                     {
-                        indent--;
+                        indentLevel--;
                     }
 
                     if (shouldIndent)
                     {
-                        for (var j = 0; j < indent; j++)
-                        {
-                            sb.Append("  ");
-                        }
+                        sb.Append(Format.Indent(indentLevel));
                     }
                     else if (foundSpaces)
                     {
@@ -90,7 +87,7 @@ namespace MukaVM.Test
 
                     if (source[i] == '{')
                     {
-                        indent++;
+                        indentLevel++;
                     }
 
                     sb.Append(source[i]);
@@ -139,35 +136,37 @@ C D
 }
 }";
 
-            const string expected = @"FUNCTION f {
-  BB1 {
-    A B
-    C D
-  }
-}";
+            var expected = new StringBuilder();
+            expected.AppendLine("FUNCTION f {");
+            expected.AppendLine(Format.Indent(1) + "BB1 {");
+            expected.AppendLine(Format.Indent(2) + "A B");
+            expected.AppendLine(Format.Indent(2) + "C D");
+            expected.AppendLine(Format.Indent(1) + "}");
+            expected.Append("}");
 
-            Assert.Equal(expected, Util.FormatSource(actual));
+            Assert.Equal(expected.ToString(), Util.FormatSource(actual));
         }
 
         [Fact]
         public void FormatSource_FixesIndentation()
         {
             const string actual = @"
-                FUNCTION f {
-                  BB1 {
-                    A B
-                    C D
-                  }
-                }";
+            FUNCTION f {
+      BB1 {
+              A B
+          C D
+                      }
+                             }";
 
-            const string expected = @"FUNCTION f {
-  BB1 {
-    A B
-    C D
-  }
-}";
+            var expected = new StringBuilder();
+            expected.AppendLine("FUNCTION f {");
+            expected.AppendLine(Format.Indent(1) + "BB1 {");
+            expected.AppendLine(Format.Indent(2) + "A B");
+            expected.AppendLine(Format.Indent(2) + "C D");
+            expected.AppendLine(Format.Indent(1) + "}");
+            expected.Append("}");
 
-            Assert.Equal(expected, Util.FormatSource(actual));
+            Assert.Equal(expected.ToString(), Util.FormatSource(actual));
         }
 
         [Fact]
@@ -175,16 +174,17 @@ C D
         {
             const string actual = @"
                 BB1 {
-                  WRITE " + "\"  Hello  World  \"" + @"
-                  RET
+                    WRITE " + "\"  Hello  World  \"" + @"
+                    RET
                 }";
 
-            const string expected = @"BB1 {
-  WRITE " + "\"  Hello  World  \"" + @"
-  RET
-}";
+            var expected = new StringBuilder();
+            expected.AppendLine("BB1 {");
+            expected.AppendLine(Format.Indent(1) + "WRITE \"  Hello  World  \"");
+            expected.AppendLine(Format.Indent(1) + "RET");
+            expected.Append("}");
 
-            Assert.Equal(expected, Util.FormatSource(actual));
+            Assert.Equal(expected.ToString(), Util.FormatSource(actual));
         }
     }
 }

@@ -34,11 +34,11 @@ namespace MukaVM.Test.IR
 
             const string expected = @"
                 FUNCTION f {
-                  BB1 {
-                    x = 0 + 10
-                    y = x + x
-                    RET
-                  }
+                    BB1 {
+                        x = 0 + 10
+                        y = x + x
+                        RET
+                    }
                 }";
 
             Util.AssertControlFlowGraphEquals(expected, function);
@@ -66,20 +66,20 @@ namespace MukaVM.Test.IR
 
             const string expected = @"
                 FUNCTION f {
-                  BB1 {
-                    x = 0 + 1
-                    IF x > 0: BB3
-                  }
-                  BB2 {
-                    x = x + 2
-                    JMP BB4
-                  }
-                  BB3 {
-                    x = x + 5
-                  }
-                  BB4 {
-                    RET
-                  }
+                    BB1 {
+                        x = 0 + 1
+                        IF x > 0: BB3
+                    }
+                    BB2 {
+                        x = x + 2
+                        JMP BB4
+                    }
+                    BB3 {
+                        x = x + 5
+                    }
+                    BB4 {
+                        RET
+                    }
                 }";
 
             Util.AssertControlFlowGraphEquals(expected, function);

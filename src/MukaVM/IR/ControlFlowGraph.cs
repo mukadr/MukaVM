@@ -60,12 +60,12 @@ namespace MukaVM.IR
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("  " + Name + " {");
+            sb.AppendLine(Format.Indent(1) + Name + " {");
             foreach (var instruction in Instructions)
             {
-                sb.AppendLine("    " + instruction.ToString());
+                sb.AppendLine(Format.Indent(2) + instruction.ToString());
             }
-            sb.AppendLine("  }");
+            sb.AppendLine(Format.Indent(1) + "}");
 
             return sb.ToString();
         }

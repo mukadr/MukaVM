@@ -22,7 +22,7 @@ namespace MukaVM.IR
             sb.AppendLine("FUNCTION " + Name + " {");
             foreach (var instruction in Instructions)
             {
-                sb.AppendLine("  " + instruction.ToString());
+                sb.AppendLine(Format.Indent(1) + instruction.ToString());
             }
             sb.AppendLine("}");
 
