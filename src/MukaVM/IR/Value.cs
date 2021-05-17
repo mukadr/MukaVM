@@ -25,16 +25,4 @@ namespace MukaVM.IR
 
         public override string ToString() => Value.ToString();
     }
-
-    public class Str : Value
-    {
-        public string Value { get; set; }
-
-        public Str(string value)
-        {
-            Value = value;
-        }
-
-        public override string ToString() => "\"" + Value + "\"";
-    }
 }

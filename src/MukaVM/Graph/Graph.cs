@@ -15,12 +15,6 @@ namespace MukaVM.IR.Graph
             Name = name;
         }
 
-        public Function(string name, List<BasicBlock> basicBlocks)
-            : this(name)
-        {
-            BasicBlocks = basicBlocks;
-        }
-
         public override string ToString()
         {
             var sb = new StringBuilder();

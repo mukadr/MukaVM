@@ -6,6 +6,7 @@ namespace MukaVM.IR
     public class Function
     {
         public string Name { get; set; }
+
         public List<Instruction> Instructions { get; set; }
 
         public Function(string name, List<Instruction> instructions)
