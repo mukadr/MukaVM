@@ -13,10 +13,10 @@ namespace MukaVM.Test
 
         internal static void AssertSourceEquals(string expected, string actual)
         {
-            Assert.Equal(ReindentSource(expected), ReindentSource(actual));
+            Assert.Equal(FormatSource(expected), FormatSource(actual));
         }
 
-        internal static string ReindentSource(string source)
+        internal static string FormatSource(string source)
         {
             var sb = new StringBuilder();
 
@@ -112,27 +112,27 @@ namespace MukaVM.Test
     public class UtilTest
     {
         [Fact]
-        public void ReindentSource_TrimsStart()
+        public void FormatSource_TrimsStart()
         {
             const string actual = " \t \n\n X";
 
             const string expected = "X";
 
-            Assert.Equal(expected, Util.ReindentSource(actual));
+            Assert.Equal(expected, Util.FormatSource(actual));
         }
 
         [Fact]
-        public void ReindentSource_TrimsEnd()
+        public void FormatSource_TrimsEnd()
         {
             const string actual = "X \t \n\n ";
 
             const string expected = "X";
 
-            Assert.Equal(expected, Util.ReindentSource(actual));
+            Assert.Equal(expected, Util.FormatSource(actual));
         }
 
         [Fact]
-        public void ReindentSource_FixesIndentation()
+        public void FormatSource_FixesIndentation()
         {
             const string actual = @"
                 BB1 {
@@ -145,11 +145,11 @@ namespace MukaVM.Test
   C D
 }";
 
-            Assert.Equal(expected, Util.ReindentSource(actual));
+            Assert.Equal(expected, Util.FormatSource(actual));
         }
 
         [Fact]
-        public void ReindentSource_RespectStrings()
+        public void FormatSource_RespectStrings()
         {
             const string actual = @"
                 BB1 {
@@ -162,7 +162,7 @@ namespace MukaVM.Test
   RET
 }";
 
-            Assert.Equal(expected, Util.ReindentSource(actual));
+            Assert.Equal(expected, Util.FormatSource(actual));
         }
     }
 }
