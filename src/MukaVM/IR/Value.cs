@@ -11,7 +11,7 @@ namespace MukaVM.IR
             Name = name;
         }
 
-       public override string ToString() => Name;
+        public override string ToString() => Name;
     }
 
     public class Int : Value

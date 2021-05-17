@@ -87,7 +87,7 @@ namespace MukaVM.Test
                         {
                             sb.Append(" ");
                         }
-                        
+
                         foundSpaces = false;
                     }
 
@@ -96,7 +96,7 @@ namespace MukaVM.Test
                         indent++;
                     }
 
-                    sb.Append(source[i]);                   
+                    sb.Append(source[i]);
 
                     if (source[i] == '"')
                     {
@@ -116,7 +116,7 @@ namespace MukaVM.Test
         {
             const string expected = "X";
             const string actual = " \t \n\n X";
-            
+
             Assert.Equal(expected, Util.ReindentSource(actual));
         }
 
