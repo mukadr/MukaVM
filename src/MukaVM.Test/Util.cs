@@ -114,8 +114,9 @@ namespace MukaVM.Test
         [Fact]
         public void ReindentSource_TrimsStart()
         {
-            const string expected = "X";
             const string actual = " \t \n\n X";
+
+            const string expected = "X";
 
             Assert.Equal(expected, Util.ReindentSource(actual));
         }
@@ -123,8 +124,9 @@ namespace MukaVM.Test
         [Fact]
         public void ReindentSource_TrimsEnd()
         {
-            const string expected = "X";
             const string actual = "X \t \n\n ";
+
+            const string expected = "X";
 
             Assert.Equal(expected, Util.ReindentSource(actual));
         }
@@ -132,15 +134,16 @@ namespace MukaVM.Test
         [Fact]
         public void ReindentSource_FixesIndentation()
         {
-            const string expected = @"BB1 {
-  A B
-  C D
-}";
             const string actual = @"
                 BB1 {
                   A B
                   C D
                 }";
+
+            const string expected = @"BB1 {
+  A B
+  C D
+}";
 
             Assert.Equal(expected, Util.ReindentSource(actual));
         }
@@ -148,15 +151,16 @@ namespace MukaVM.Test
         [Fact]
         public void ReindentSource_RespectStrings()
         {
-            const string expected = @"BB1 {
-  WRITE " + "\"  Hello  World  \"" + @"
-  RET
-}";
             const string actual = @"
                 BB1 {
                   WRITE " + "\"  Hello  World  \"" + @"
                   RET
                 }";
+
+            const string expected = @"BB1 {
+  WRITE " + "\"  Hello  World  \"" + @"
+  RET
+}";
 
             Assert.Equal(expected, Util.ReindentSource(actual));
         }
