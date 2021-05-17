@@ -15,7 +15,7 @@ namespace MukaVM.Test.Graph
                 FUNCTION f {
                 }";
 
-            Util.AssertFunctionToCfgEquals(expected, function);
+            Util.AssertControlFlowGraphEquals(expected, function);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace MukaVM.Test.Graph
                   }
                 }";
 
-            Util.AssertFunctionToCfgEquals(expected, function);
+            Util.AssertControlFlowGraphEquals(expected, function);
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace MukaVM.Test.Graph
                   }
                 }";
 
-            Util.AssertFunctionToCfgEquals(expected, function);
+            Util.AssertControlFlowGraphEquals(expected, function);
         }
     }
 }
