@@ -5,4 +5,5 @@ This is a hobby project that aims to compile a simple intermediate language (IR)
 
 ## Roadmap
 - [x] Break functions into basic blocks
+- [ ] Connect basic blocks (next and previous list)
 - [ ] Convert variables into SSA form
