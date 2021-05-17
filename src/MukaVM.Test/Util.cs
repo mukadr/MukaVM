@@ -74,22 +74,19 @@ namespace MukaVM.Test
                         indent--;
                     }
 
-                    if (foundSpaces)
+                    if (shouldIndent)
                     {
-                        if (shouldIndent)
+                        for (var j = 0; j < indent; j++)
                         {
-                            for (var j = 0; j < indent; j++)
-                            {
-                                sb.Append("  ");
-                            }
+                            sb.Append("  ");
                         }
-                        else
-                        {
-                            sb.Append(" ");
-                        }
-
-                        foundSpaces = false;
                     }
+                    else if (foundSpaces)
+                    {
+                        sb.Append(" ");
+                    }
+
+                    foundSpaces = false;
 
                     if (source[i] == '{')
                     {
@@ -132,17 +129,42 @@ namespace MukaVM.Test
         }
 
         [Fact]
+        public void FormatSource_AddsIndentation()
+        {
+            const string actual = @"
+FUNCTION f {
+BB1 {
+A B
+C D
+}
+}";
+
+            const string expected = @"FUNCTION f {
+  BB1 {
+    A B
+    C D
+  }
+}";
+
+            Assert.Equal(expected, Util.FormatSource(actual));
+        }
+
+        [Fact]
         public void FormatSource_FixesIndentation()
         {
             const string actual = @"
-                BB1 {
-                  A B
-                  C D
+                FUNCTION f {
+                  BB1 {
+                    A B
+                    C D
+                  }
                 }";
 
-            const string expected = @"BB1 {
-  A B
-  C D
+            const string expected = @"FUNCTION f {
+  BB1 {
+    A B
+    C D
+  }
 }";
 
             Assert.Equal(expected, Util.FormatSource(actual));
