@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using MukaVM.IR;
 using Xunit;
 
-namespace MukaVM.Test.Graph
+namespace MukaVM.Test.IR
 {
-    public class CfgTest
+    public class ControlFlowGraphTest
     {
         [Fact]
         public void EmptyFunction_Generates_EmptyCfg()

@@ -8,7 +8,7 @@ namespace MukaVM.Test
     {
         internal static void AssertControlFlowGraphEquals(string expected, Function function)
         {
-            AssertSourceEquals(expected, IR.Graph.Convert.ToControlFlowGraph(function).ToString());
+            AssertSourceEquals(expected, Convert.ToControlFlowGraph(function).ToString());
         }
 
         internal static void AssertSourceEquals(string expected, string actual)
