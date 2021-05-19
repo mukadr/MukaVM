@@ -6,7 +6,7 @@ namespace MukaVM.IR
     {
         public static CfgFunction ToControlFlowGraph(Function function)
         {
-            CfgFunction cfg = BuildControlFlowGraph(function);
+            var cfg = BuildControlFlowGraph(function);
 
             ConnectControlFlowGraph(cfg);
 
