@@ -43,7 +43,7 @@ C D
             expected.AppendLine(Format.Indent(2) + "A B");
             expected.AppendLine(Format.Indent(2) + "C D");
             expected.AppendLine(Format.Indent(1) + "}");
-            expected.Append("}");
+            expected.Append('}');
 
             Assert.Equal(expected.ToString(), Format.FormatSource(actual));
         }
@@ -65,7 +65,7 @@ C D
             expected.AppendLine(Format.Indent(2) + "A B");
             expected.AppendLine(Format.Indent(2) + "C D");
             expected.AppendLine(Format.Indent(1) + "}");
-            expected.Append("}");
+            expected.Append('}');
 
             Assert.Equal(expected.ToString(), Format.FormatSource(actual));
         }
@@ -83,7 +83,7 @@ C D
             expected.AppendLine("BB1 {");
             expected.AppendLine(Format.Indent(1) + "WRITE \"  Hello  World  \"");
             expected.AppendLine(Format.Indent(1) + "RET");
-            expected.Append("}");
+            expected.Append('}');
 
             Assert.Equal(expected.ToString(), Format.FormatSource(actual));
         }

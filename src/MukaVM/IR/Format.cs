@@ -82,7 +82,7 @@ namespace MukaVM.IR
                     }
                     else if (foundSpaces)
                     {
-                        sb.Append(" ");
+                        sb.Append(' ');
                     }
 
                     foundSpaces = false;
