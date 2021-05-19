@@ -78,7 +78,7 @@ namespace MukaVM.IR
 
                     if (shouldIndent)
                     {
-                        sb.Append(IR.Format.Indent(indentLevel));
+                        sb.Append(Indent(indentLevel));
                     }
                     else if (foundSpaces)
                     {
