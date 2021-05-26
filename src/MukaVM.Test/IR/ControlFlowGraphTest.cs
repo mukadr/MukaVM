@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using MukaVM.IR;
 using Xunit;
 
@@ -9,28 +8,26 @@ namespace MukaVM.Test.IR
         [Fact]
         public void EmptyFunction_Generates_EmptyCfg()
         {
-            var function = new Function("f", new List<Instruction>());
+            const string sourceText = @"
+                FUNCTION f {
+                }";
 
             const string expected = @"
                 FUNCTION f {
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, function);
+            Util.AssertControlFlowGraphEquals(expected, Convert.FromSourceText(sourceText));
         }
 
         [Fact]
         public void SimpleFunction_Generates_One_BasicBlock()
         {
-            var x = new Var("x");
-            var y = new Var("y");
-            var function = new Function(
-                "f",
-                new List<Instruction>
-                {
-                    new Add(x, new Int(0), new Int(10)),
-                    new Add(y, x, x),
-                    new Ret()
-                });
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 0 + 10
+                    y = x + x
+                    RET
+                }";
 
             const string expected = @"
                 FUNCTION f {
@@ -41,28 +38,23 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, function);
+            Util.AssertControlFlowGraphEquals(expected, Convert.FromSourceText(sourceText));
         }
 
         [Fact]
         public void FunctionWithLabels_Generates_MoreThanOne_BasicBlock()
         {
-            var x = new Var("x");
-            var add5 = new Label("add5");
-            var exit = new Label("exit");
-            var function = new Function(
-                "f",
-                new List<Instruction>
-                {
-                    new Add(x, new Int(0), new Int(1)),
-                    new Jg(x, new Int(0), add5),
-                    new Add(x, x, new Int(2)),
-                    new Jmp(exit),
-                    add5,
-                    new Add(x, x, new Int(5)),
-                    exit,
-                    new Ret()
-                });
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 0 + 1
+                    IF x > 0: add5
+                    x = x + 2
+                    JMP exit
+                    add5
+                    x = x + 5
+                    exit
+                    RET
+                }";
 
             const string expected = @"
                 FUNCTION f {
@@ -88,7 +80,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, function);
+            Util.AssertControlFlowGraphEquals(expected, Convert.FromSourceText(sourceText));
         }
     }
 }

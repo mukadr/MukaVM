@@ -23,6 +23,11 @@ namespace MukaVM.IR
             Value = value;
         }
 
+        public Int(string value)
+        {
+            Value = int.Parse(value);
+        }
+
         public override string ToString() => Value.ToString();
     }
 }

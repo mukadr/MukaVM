@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace MukaVM.IR
 {
-    public static class Convert
+    public static partial class Convert
     {
         public static CfgFunction ToControlFlowGraph(Function function)
         {

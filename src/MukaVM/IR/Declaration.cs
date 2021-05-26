@@ -15,6 +15,10 @@ namespace MukaVM.IR
             Instructions = instructions;
         }
 
+        public Function(string name)
+            : this(name, new List<Instruction>())
+        { }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
