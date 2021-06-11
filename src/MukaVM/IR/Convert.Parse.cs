@@ -179,9 +179,9 @@ namespace MukaVM.IR
             { }
         }
 
-        private sealed class UnresolvedLabel : Label
+        private sealed class JmpTarget : Label
         {
-            public UnresolvedLabel(string name)
+            public JmpTarget(string name)
                 : base(name)
             { }
         }
@@ -209,7 +209,7 @@ namespace MukaVM.IR
 
             var variables = new List<Var>();
             var labels = new List<Label>();
-            var unresolvedLabels = new List<UnresolvedLabel>();
+            var jmpTargets = new List<JmpTarget>();
 
             Value GetValue(Token token)
             {
@@ -265,11 +265,11 @@ namespace MukaVM.IR
                     case TokenKind.Jmp:
                         {
                             token = Match(token, TokenKind.Jmp);
-                            var target = unresolvedLabels.SingleOrDefault(ul => ul.Name == token.Value);
+                            var target = jmpTargets.SingleOrDefault(t => t.Name == token.Value);
                             if (target is null)
                             {
-                                target = new UnresolvedLabel(token.Value);
-                                unresolvedLabels.Add(target);
+                                target = new JmpTarget(token.Value);
+                                jmpTargets.Add(target);
                             }
 
                             token = Match(token, TokenKind.Identifier);
@@ -285,11 +285,11 @@ namespace MukaVM.IR
                             token = Match(right, TokenKind.Int, TokenKind.Identifier);
                             token = Match(token, TokenKind.Colon);
 
-                            var target = unresolvedLabels.SingleOrDefault(ul => ul.Name == token.Value);
+                            var target = jmpTargets.SingleOrDefault(t => t.Name == token.Value);
                             if (target is null)
                             {
-                                target = new UnresolvedLabel(token.Value);
-                                unresolvedLabels.Add(target);
+                                target = new JmpTarget(token.Value);
+                                jmpTargets.Add(target);
                             }
 
                             token = Match(token, TokenKind.Identifier);
@@ -309,7 +309,7 @@ namespace MukaVM.IR
 
             token = Match(token, TokenKind.CloseBrace);
 
-            // Resolve labels
+            // Resolve jmp targets
             foreach (var instruction in function.Instructions)
             {
                 if (instruction is Jmp jmp)
