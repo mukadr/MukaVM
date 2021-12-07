@@ -47,9 +47,13 @@ namespace MukaVM.IR
 
         public List<Instruction> Instructions { get; set; } = new();
 
+        public List<Phi> Phis { get; set; } = new();
+
         public SortedList<string, BasicBlock> ReachedBy { get; set; } = new();
 
         public SortedList<string, BasicBlock> FollowedBy { get; set; } = new();
+
+        public Dictionary<string, SSAVar> SSAVariables { get; set; } = new();
 
         public BasicBlock(int number)
         {
@@ -70,6 +74,11 @@ namespace MukaVM.IR
             if (ReachedBy.Count > 0)
             {
                 sb.AppendLine(Format.Indent(2) + "<" + string.Join(", ", ReachedBy.Select(kv => kv.Key)) + ">");
+            }
+
+            foreach (var phi in Phis)
+            {
+                sb.AppendLine(Format.Indent(2) + phi.ToString());
             }
 
             foreach (var instruction in Instructions)

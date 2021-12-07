@@ -14,6 +14,17 @@ namespace MukaVM.IR
         public override string ToString() => Name;
     }
 
+    public class SSAVar : Var
+    {
+        public int N { get; }
+
+        public SSAVar(int n)
+            : base("v" + n.ToString())
+        {
+            N = n;
+        }
+    }
+
     public class Int : Value
     {
         public int Value { get; set; }
