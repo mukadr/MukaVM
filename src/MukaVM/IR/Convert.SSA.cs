@@ -63,8 +63,16 @@ namespace MukaVM.IR
                 return FindSSAVariable(bb.ReachedBy.Single().Value, name, ref ssaVarCount);
             }
             
-            var phiTarget = CreateSSAVariable(bb, name, ref ssaVarCount);
             var phiOperands = FindPhiOperands(bb, name, ref ssaVarCount);
+
+            // Avoid redundant PHI
+            var firstOperand = phiOperands.First();
+            if (phiOperands.All(p => p == firstOperand))
+            {
+                return firstOperand;
+            }
+
+            var phiTarget = CreateSSAVariable(bb, name, ref ssaVarCount);
             bb.Phis.Add(new Phi(phiTarget, phiOperands));
             return phiTarget;
         }

@@ -87,8 +87,7 @@ namespace MukaVM.Test.IR
                     BB7 {
                         <BB5, BB6>
                         v7 = PHI(v5, v6)
-                        v8 = PHI(v4, v4)
-                        v9 = v7 + v8
+                        v8 = v7 + v4
                         RET
                     }
                 }";
