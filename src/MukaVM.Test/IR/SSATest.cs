@@ -96,7 +96,7 @@ namespace MukaVM.Test.IR
         }
 
         [Fact]
-        public void FunctionWithLoops_Is_Handled_Correctly()
+        public void Simple_Loop_Is_Handled_Correctly()
         {
             const string sourceText = @"
                 FUNCTION f {
