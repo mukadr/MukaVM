@@ -1,4 +1,3 @@
-using MukaVM.IR;
 using Xunit;
 
 namespace MukaVM.Test.IR
@@ -24,7 +23,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertSSAEquals(expected, sourceText);
         }
 
         [Fact]
@@ -92,7 +91,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertSSAEquals(expected, sourceText);
         }
 
         [Fact]
@@ -133,7 +132,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertSSAEquals(expected, sourceText);
         }
 
         [Fact]
@@ -190,7 +189,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertSSAEquals(expected, sourceText);
         }
     }
 }

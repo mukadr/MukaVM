@@ -5,14 +5,14 @@ namespace MukaVM.Test
 {
     internal static class Util
     {
-        internal static void AssertControlFlowGraphEquals(string expected, Function actual)
+        internal static void AssertControlFlowGraphEquals(string expected, string actual)
         {
-            AssertSourceEquals(expected, CFG.Convert(actual).ToString());
+            AssertSourceEquals(expected, CFG.Convert(Parse.FromSourceText(actual)).ToString());
         }
 
-        internal static void AssertSSAEquals(string expected, Function actual)
+        internal static void AssertSSAEquals(string expected, string actual)
         {
-            var cfgFunction = CFG.Convert(actual);
+            var cfgFunction = CFG.Convert(Parse.FromSourceText(actual));
 
             SSA.Transform(cfgFunction);
 

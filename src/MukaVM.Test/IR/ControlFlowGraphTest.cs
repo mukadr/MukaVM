@@ -1,4 +1,3 @@
-using MukaVM.IR;
 using Xunit;
 
 namespace MukaVM.Test.IR
@@ -16,7 +15,7 @@ namespace MukaVM.Test.IR
                 FUNCTION f {
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, sourceText);
         }
 
         [Fact]
@@ -38,7 +37,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, sourceText);
         }
 
         [Fact]
@@ -80,7 +79,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, sourceText);
         }
 
         [Fact]
@@ -120,7 +119,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, sourceText);
         }
     }
 }
