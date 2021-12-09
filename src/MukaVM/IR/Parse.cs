@@ -1,184 +1,12 @@
-using System;
+using ParseSharp;
+using static ParseSharp.Parser;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace MukaVM.IR
 {
     public class Parse
     {
-        private enum TokenKind
-        {
-            Identifier,
-            Int,
-            Function,
-            If,
-            Jmp,
-            Ret,
-            Colon,
-
-            Plus,
-            GreaterThan,
-            Assign,
-            OpenBrace,
-            CloseBrace,
-
-            EndOfSource,
-            Invalid
-        }
-
-        private class Token
-        {
-            public TokenKind Kind { get; init; }
-            public string Value { get; init; } = string.Empty;
-        }
-
-        private class Scanner
-        {
-            private readonly string _sourceText;
-            private int _position;
-
-            private Dictionary<string, TokenKind> _reservedWords = new()
-            {
-                { "FUNCTION", TokenKind.Function },
-                { "IF", TokenKind.If },
-                { "JMP", TokenKind.Jmp },
-                { "RET", TokenKind.Ret }
-            };
-
-            public Scanner(string sourceText)
-            {
-                _sourceText = sourceText;
-                _position = 0;
-            }
-
-            private int Look => (_position < _sourceText.Length ? _sourceText[_position] : -1);
-
-            private void Advance() => _position++;
-
-            private static bool IsWhitespace(int c) => (c == ' ' || c == '\t' || c == '\r' || c == '\n');
-
-            private static bool IsAlpha(int c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-
-            private static bool IsDigit(int c) => (c >= '0' && c <= '9');
-
-            private void SkipWhitespace()
-            {
-                while (IsWhitespace(Look))
-                {
-                    Advance();
-                }
-            }
-
-            private Token? TryScanIdentifier()
-            {
-                if (IsAlpha(Look) || Look == '_')
-                {
-                    var sb = new StringBuilder();
-
-                    do
-                    {
-                        sb.Append((char)Look);
-                        Advance();
-                    } while (IsAlpha(Look) || Look == '_' || IsDigit(Look));
-
-                    var value = sb.ToString();
-                    if (_reservedWords.TryGetValue(value, out var reservedWord))
-                    {
-                        return CreateToken(reservedWord);
-                    }
-                    return CreateToken(TokenKind.Identifier, value);
-                }
-
-                return null;
-            }
-
-            private Token? TryScanNumber()
-            {
-                if (IsDigit(Look))
-                {
-                    var sb = new StringBuilder();
-
-                    do
-                    {
-                        sb.Append((char)Look);
-                        Advance();
-                    } while (IsDigit(Look));
-
-                    return CreateToken(TokenKind.Int, sb.ToString());
-                }
-
-                return null;
-            }
-
-            private Token? TryScanOperator()
-            {
-                switch (Look)
-                {
-                    case '+':
-                        Advance();
-                        return CreateToken(TokenKind.Plus);
-
-                    case '>':
-                        Advance();
-                        return CreateToken(TokenKind.GreaterThan);
-
-                    case '=':
-                        Advance();
-                        return CreateToken(TokenKind.Assign);
-
-                    case '{':
-                        Advance();
-                        return CreateToken(TokenKind.OpenBrace);
-
-                    case '}':
-                        Advance();
-                        return CreateToken(TokenKind.CloseBrace);
-
-                    case ':':
-                        Advance();
-                        return CreateToken(TokenKind.Colon);
-
-                    default:
-                        return null;
-                }
-            }
-
-            public Token NextToken()
-            {
-                SkipWhitespace();
-
-                var token =
-                    TryScanIdentifier() ??
-                    TryScanNumber() ??
-                    TryScanOperator();
-
-                if (token is null)
-                {
-                    if (Look == -1)
-                    {
-                        token = CreateToken(TokenKind.EndOfSource);
-                    }
-                    else
-                    {
-                        Advance();
-                        token = CreateToken(TokenKind.Invalid);
-                    }
-                }
-
-                return token;
-            }
-
-            private Token CreateToken(TokenKind kind, string value = "") => new() { Kind = kind, Value = value };
-        }
-
-        public class ParseException : Exception
-        {
-            public ParseException(string message)
-                : base("Parse error: " + message)
-            { }
-        }
-
         private sealed class JmpTarget : Label
         {
             public JmpTarget(string name)
@@ -188,138 +16,107 @@ namespace MukaVM.IR
 
         public static Function FromSourceText(string sourceText)
         {
-            var scanner = new Scanner(sourceText);
-            var token = scanner.NextToken();
-
-            Token Match(Token current, params TokenKind[] expected)
-            {
-                if (!expected.Contains(current.Kind))
-                {
-                    throw new ParseException($"Expected {expected[0]} got {current.Kind}.");
-                }
-                return scanner.NextToken();
-            }
-
-            token = Match(token, TokenKind.Function);
-
-            var function = new Function(token.Value);
-
-            token = Match(token, TokenKind.Identifier);
-            token = Match(token, TokenKind.OpenBrace);
+            var letter = Match('a', 'z').Or(Match('A', 'Z'));
+            var digit = Match('0', '9');
+            var integer = Token(OneOrMore(digit));
+            var identifier = Token(letter.Bind(l => ZeroOrMore(letter.Or(digit)).Map(ld => l + ld)));
+            var functionKw = Token("FUNCTION");
+            var ifKw = Token("IF");
+            var jmpKw = Token("JMP");
+            var retKw = Token("RET");
+            var assign = Token("=");
+            var plus = Token("+");
+            var gt = Token(">");
+            var colon = Token(":");
+            var openBrace = Token("{");
+            var closeBrace = Token("}");
 
             var variables = new List<Var>();
             var labels = new List<Label>();
             var jmpTargets = new List<JmpTarget>();
 
-            Value GetValue(Token token)
+            var argument =
+                integer.Map<Value>(i => new Int(i.Value))
+                .Or(identifier.Map<Value>(id => new Var(id.Value)));
+
+            var addInstruction =
+                identifier.Bind(id =>
+                    assign.And(argument).Bind(left =>
+                        plus.And(argument).Map<Instruction>(right =>
+                        {
+                            var v = variables.SingleOrDefault(v => v.Name == id.Value);
+                            if (v is null)
+                            {
+                                v = new Var(id.Value);
+                                variables.Add(v);
+                            }
+                            return new Add(v, left, right);
+                        })));
+
+            var labelInstruction = identifier.Map<Instruction>(id =>
             {
-                if (token.Kind == TokenKind.Int)
+                var l = new Label(id.Value);
+                if (labels.Any(ll => ll.Name == l.Name))
                 {
-                    return new Int(token.Value);
+                    throw new ParserException($"Label {l} already declared.");
                 }
-                return variables.Single(v => v.Name == token.Value);
-            }
+                labels.Add(l);
+                return l;
+            });
 
-            while (token.Kind != TokenKind.CloseBrace &&
-                   token.Kind != TokenKind.EndOfSource)
+            var jmpInstruction = jmpKw.And(identifier.Map<Instruction>(id =>
             {
-                switch (token.Kind)
+                var target = jmpTargets.SingleOrDefault(t => t.Name == id.Value);
+                if (target is null)
                 {
-                    case TokenKind.Identifier:
+                    target = new JmpTarget(id.Value);
+                    jmpTargets.Add(target);
+                }
+                return new Jmp(target);
+            }));
+
+            var ifInstruction =
+                ifKw.And(argument.Bind(left =>
+                    gt.And(argument.Bind(right =>
+                        colon.And(identifier.Map<Instruction>(labelName =>
                         {
-                            var id = token.Value;
-
-                            var @var = variables.SingleOrDefault(v => v.Name == id);
-                            if (@var is null)
-                            {
-                                @var = new Var(id);
-                                variables.Add(@var);
-                            }
-
-                            token = Match(token, TokenKind.Identifier);
-
-                            if (token.Kind == TokenKind.Assign)
-                            {
-                                var left = Match(token, TokenKind.Assign);
-                                var plus = Match(left, TokenKind.Int, TokenKind.Identifier);
-                                var right = Match(plus, TokenKind.Plus);
-                                token = Match(right, TokenKind.Int, TokenKind.Identifier);
-
-                                function.Instructions.Add(new Add(@var, GetValue(left), GetValue(right)));
-                            }
-                            else
-                            {
-                                var label = new Label(id);
-
-                                if (labels.Any(l => l.Name == label.Name))
-                                {
-                                    throw new ParseException($"Label {label} already declared.");
-                                }
-
-                                labels.Add(label);
-                                function.Instructions.Add(label);
-                            }
-                        }
-                        break;
-
-                    case TokenKind.Jmp:
-                        {
-                            token = Match(token, TokenKind.Jmp);
-                            var target = jmpTargets.SingleOrDefault(t => t.Name == token.Value);
+                            var target = jmpTargets.SingleOrDefault(t => t.Name == labelName.Value);
                             if (target is null)
                             {
-                                target = new JmpTarget(token.Value);
+                                target = new JmpTarget(labelName.Value);
                                 jmpTargets.Add(target);
                             }
+                            return new Jg(left, right, target);
+                        }))))));
 
-                            token = Match(token, TokenKind.Identifier);
-                            function.Instructions.Add(new Jmp(target));
-                        }
-                        break;
+            var retInstruction = retKw.Map<Instruction>(_ => new Ret());
 
-                    case TokenKind.If:
-                        {
-                            var left = Match(token, TokenKind.If);
-                            var op = Match(left, TokenKind.Int, TokenKind.Identifier);
-                            var right = Match(op, TokenKind.GreaterThan);
-                            token = Match(right, TokenKind.Int, TokenKind.Identifier);
-                            token = Match(token, TokenKind.Colon);
+            var instruction =
+                jmpInstruction
+                .Or(ifInstruction)
+                .Or(retInstruction)
+                .Or(addInstruction)
+                .Or(labelInstruction);
 
-                            var target = jmpTargets.SingleOrDefault(t => t.Name == token.Value);
-                            if (target is null)
-                            {
-                                target = new JmpTarget(token.Value);
-                                jmpTargets.Add(target);
-                            }
+            var functionDefinition =
+                Optional(Whitespace)
+                .And(functionKw.And(identifier.Bind(name =>
+                    openBrace.And(ZeroOrMore(instruction).Bind(instructions =>
+                        closeBrace.Map(_ => new Function(name.Value, ResolveJmpTargets(instructions, labels))))))));    
 
-                            token = Match(token, TokenKind.Identifier);
-                            function.Instructions.Add(new Jg(GetValue(left), GetValue(right), target));
-                        }
-                        break;
+            return functionDefinition.ParseAllText(sourceText);
+        }
 
-                    case TokenKind.Ret:
-                        function.Instructions.Add(new Ret());
-                        token = Match(token, TokenKind.Ret);
-                        break;
-
-                    case TokenKind.Invalid:
-                        throw new ParseException("Invalid token.");
-                }
-            }
-
-            token = Match(token, TokenKind.CloseBrace);
-
-            // Resolve jmp targets
-            foreach (var instruction in function.Instructions)
+        private static List<Instruction> ResolveJmpTargets(IEnumerable<Instruction> instructions, IEnumerable<Label> labels)
+        {
+            foreach (var instruction in instructions)
             {
                 if (instruction is Jmp jmp)
                 {
-                    var target = labels.Single(l => l.Name == jmp.Target.Name);
-                    jmp.Target = target;
+                    jmp.Target = labels.Single(l => l.Name == jmp.Target.Name);
                 }
             }
-
-            return function;
+            return instructions.ToList();
         }
     }
 }
