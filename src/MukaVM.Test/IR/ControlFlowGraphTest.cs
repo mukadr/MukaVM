@@ -16,7 +16,7 @@ namespace MukaVM.Test.IR
                 FUNCTION f {
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Convert.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Convert.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertControlFlowGraphEquals(expected, Convert.FromSourceText(sourceText));
+            Util.AssertControlFlowGraphEquals(expected, Parse.FromSourceText(sourceText));
         }
     }
 }

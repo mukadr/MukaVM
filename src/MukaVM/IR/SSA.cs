@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MukaVM.IR
 {
-    public static partial class Convert
+    public class SSA
     {
         public static void ToSSA(CfgFunction function)
         {

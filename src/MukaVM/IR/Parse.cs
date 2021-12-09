@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MukaVM.IR
 {
-    public static partial class Convert
+    public class Parse
     {
         private enum TokenKind
         {

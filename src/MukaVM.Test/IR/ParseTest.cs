@@ -13,7 +13,7 @@ namespace MukaVM.Test.IR
                     RET
                 }";
 
-            Util.AssertSourceEquals(sourceText, Convert.FromSourceText(sourceText).ToString());
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace MukaVM.Test.IR
                     x = 0 + 10
                 }";
 
-            Util.AssertSourceEquals(sourceText, Convert.FromSourceText(sourceText).ToString());
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace MukaVM.Test.IR
                     end
                 }";
 
-            Util.AssertSourceEquals(sourceText, Convert.FromSourceText(sourceText).ToString());
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace MukaVM.Test.IR
                     end
                 }";
 
-            Util.AssertSourceEquals(sourceText, Convert.FromSourceText(sourceText).ToString());
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace MukaVM.Test.IR
                     y = x + 5
                 }";
 
-            Util.AssertSourceEquals(sourceText, Convert.FromSourceText(sourceText).ToString());
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace MukaVM.Test.IR
                     greater
                 }";
 
-            Util.AssertSourceEquals(sourceText, Convert.FromSourceText(sourceText).ToString());
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
         }
     }
 }

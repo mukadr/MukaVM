@@ -24,7 +24,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertSSAEquals(expected, Convert.FromSourceText(sourceText));
+            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace MukaVM.Test.IR
                     }
                 }";
 
-            Util.AssertSSAEquals(expected, Convert.FromSourceText(sourceText));
+            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
         }
     }
 }
