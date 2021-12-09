@@ -12,27 +12,19 @@ namespace MukaVM.IR
             {
                 foreach (var instruction in bb.Instructions)
                 {
-                    if (instruction is Add add)
+                    if (instruction is InstructionWithOperands io)
                     {
-                        if (add.Value1 is Var v1)
+                        for (var i = 0; i < io.Operands.Length; i++)
                         {
-                            add.Value1 = FindSSAVariable(bb, v1.Name, ref ssaVarCount);
+                            if (io.Operands[i] is Var v)
+                            {
+                                io.Operands[i] = FindSSAVariable(bb, v.Name, ref ssaVarCount);
+                            }
                         }
-                        if (add.Value2 is Var v2)
+
+                        if (instruction is InstructionWithTarget it)
                         {
-                            add.Value2 = FindSSAVariable(bb, v2.Name, ref ssaVarCount);
-                        }
-                        add.Target = CreateSSAVariable(bb, add.Target.Name, ref ssaVarCount);
-                    }
-                    else if (instruction is Jg jg)
-                    {
-                        if (jg.Value1 is Var v1)
-                        {
-                            jg.Value1 = FindSSAVariable(bb, v1.Name, ref ssaVarCount);
-                        }
-                        if (jg.Value2 is Var v2)
-                        {
-                            jg.Value2 = FindSSAVariable(bb, v2.Name, ref ssaVarCount);
+                            it.Target = CreateSSAVariable(bb, it.Target.Name, ref ssaVarCount);
                         }
                     }
                 }
