@@ -7,12 +7,12 @@ namespace MukaVM.Test
     {
         internal static void AssertControlFlowGraphEquals(string expected, Function actual)
         {
-            AssertSourceEquals(expected, CfgBuilder.ToControlFlowGraph(actual).ToString());
+            AssertSourceEquals(expected, CFG.Convert(actual).ToString());
         }
 
         internal static void AssertSSAEquals(string expected, Function actual)
         {
-            var cfgFunction = CfgBuilder.ToControlFlowGraph(actual);
+            var cfgFunction = CFG.Convert(actual);
 
             SSA.Transform(cfgFunction);
 

@@ -2,9 +2,9 @@ using System.Linq;
 
 namespace MukaVM.IR
 {
-    public static class CfgBuilder
+    public static class CFG
     {
-        public static CfgFunction ToControlFlowGraph(Function function)
+        public static CfgFunction Convert(Function function)
         {
             var cfg = BuildControlFlowGraph(function);
 
