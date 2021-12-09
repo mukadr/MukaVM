@@ -45,8 +45,7 @@ namespace MukaVM.IR
                     {
                         for (var i = 0; i < phi.Operands.Count; i++)
                         {
-                            // If target is inside operand list,
-                            // we have a loop.
+                            // If target is inside operand list, we have a loop
                             // Update operand with the latest version of this variable
                             if (phi.Operands[i] == phi.Target)
                             {
