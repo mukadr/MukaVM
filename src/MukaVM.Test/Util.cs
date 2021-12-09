@@ -14,7 +14,7 @@ namespace MukaVM.Test
         {
             var cfgFunction = CfgBuilder.ToControlFlowGraph(actual);
 
-            SSA.ToSSA(cfgFunction);
+            SSA.Transform(cfgFunction);
 
             AssertSourceEquals(expected, cfgFunction.ToString());
         }
