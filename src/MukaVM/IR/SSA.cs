@@ -58,11 +58,6 @@ namespace MukaVM.IR
 
             private SSAVar FindSSAVariableRecursive(BasicBlock bb, string name)
             {
-                if (bb.ReachedBy.Count == 1)
-                {
-                    return FindSSAVariable(bb.ReachedBy.Single().Value, name);
-                }
-
                 var phiOperands = FindPhiOperands(bb, name);
 
                 // Avoid redundant PHI
