@@ -135,5 +135,62 @@ namespace MukaVM.Test.IR
 
             Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
         }
+
+        [Fact]
+        public void Loop_With_Two_Exits_Generates_PHI()
+        {
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 0 + 1
+                    again
+                    x = x + 1
+                    IF x > 5: end1
+                    IF x > 10: end2
+                    JMP again
+                    end1
+                    x = 10 + x
+                    end2
+                    y = x + 5
+                    RET
+                }";
+
+            const string expected = @"
+                FUNCTION f {
+                    BB1 {
+                        v1 = 0 + 1
+                        <BB2>
+                    }
+                    BB2 {
+                        <BB1, BB4>
+                        v2 = PHI(v1, v3)
+                        v3 = v2 + 1
+                        IF v3 > 5: BB5
+                        <BB3, BB5>
+                    }
+                    BB3 {
+                        <BB2>
+                        IF v3 > 10: BB6
+                        <BB4, BB6>
+                    }
+                    BB4 {
+                        <BB3>
+                        JMP BB2
+                        <BB2>
+                    }
+                    BB5 {
+                        <BB2>
+                        v4 = 10 + v3
+                        <BB6>
+                    }
+                    BB6 {
+                        <BB3, BB5>
+                        v5 = PHI(v3, v4)
+                        v6 = v5 + 5
+                        RET
+                    }
+                }";
+
+            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
+        }
     }
 }
