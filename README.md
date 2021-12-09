@@ -9,7 +9,7 @@ This is a hobby project that aims to compile a simple intermediate language (IR)
 - [x] Parse IR
 - [x] Split instructions into basic blocks
 - [x] Connect basic blocks
-- [ ] Convert to SSA
+- [x] Convert to SSA
 - [ ] Perform simple optimizations
 - [ ] Register allocation
 - [ ] Code generation
