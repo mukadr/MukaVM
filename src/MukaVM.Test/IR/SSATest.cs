@@ -94,5 +94,46 @@ namespace MukaVM.Test.IR
 
             Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
         }
+
+        [Fact]
+        public void FunctionWithLoops_Is_Handled_Correctly()
+        {
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 0 + 1
+                    again
+                    x = x + 1
+                    IF x > 10: end
+                    JMP again
+                    end
+                    RET
+                }";
+
+            const string expected = @"
+                FUNCTION f {
+                    BB1 {
+                        v1 = 0 + 1
+                        <BB2>
+                    }
+                    BB2 {
+                        <BB1, BB3>
+                        v2 = PHI(v1, v3)
+                        v3 = v2 + 1
+                        IF v3 > 10: BB4
+                        <BB3, BB4>
+                    }
+                    BB3 {
+                        <BB2>
+                        JMP BB2
+                        <BB2>
+                    }
+                    BB4 {
+                        <BB2>
+                        RET
+                    }
+                }";
+
+            Util.AssertSSAEquals(expected, Parse.FromSourceText(sourceText));
+        }
     }
 }

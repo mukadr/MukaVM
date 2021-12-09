@@ -16,12 +16,15 @@ namespace MukaVM.IR
 
     public class SSAVar : Var
     {
+        public string VName { get; }
+
         public int N { get; }
 
-        public SSAVar(int n)
+        public SSAVar(int n, string vname)
             : base("v" + n.ToString())
         {
             N = n;
+            VName = vname;
         }
     }
 

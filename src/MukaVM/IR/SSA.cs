@@ -37,12 +37,30 @@ namespace MukaVM.IR
                         }
                     }
                 }
+
+                // Update PHI operands in the presence of loops
+                foreach (var bb in function.BasicBlocks)
+                {
+                    foreach (var phi in bb.Phis)
+                    {
+                        for (var i = 0; i < phi.Operands.Count; i++)
+                        {
+                            // If target is inside operand list,
+                            // we have a loop.
+                            // Update operand with the latest version of this variable
+                            if (phi.Operands[i] == phi.Target)
+                            {
+                                phi.Operands[i] = bb.SSAVariables[phi.Operands[i].VName];
+                            }
+                        }
+                    }
+                }
             }
 
             private SSAVar CreateSSAVariable(BasicBlock bb, string name)
             {
-                var ssaVar = new SSAVar(_varCounter++);
-                bb.SSAVariables.Add(name, ssaVar);
+                var ssaVar = new SSAVar(_varCounter++, name);
+                bb.SSAVariables[name] = ssaVar;
                 return ssaVar;
             }
 
@@ -58,16 +76,28 @@ namespace MukaVM.IR
 
             private SSAVar FindSSAVariableRecursive(BasicBlock bb, string name)
             {
+                var previous = bb.SSAVariables.GetValueOrDefault(name);
+                var phiTarget = CreateSSAVariable(bb, name);
                 var phiOperands = FindPhiOperands(bb, name);
 
                 // Avoid redundant PHI
                 var firstOperand = phiOperands.First();
                 if (phiOperands.All(p => p == firstOperand))
                 {
+                    // To avoid unused variable numbers and keep tests sane
+                    if (previous is null)
+                    {
+                        bb.SSAVariables.Remove(name);
+                    }
+                    else
+                    {
+                        bb.SSAVariables[name] = previous;
+                    }
+                    _varCounter--;
+
                     return firstOperand;
                 }
 
-                var phiTarget = CreateSSAVariable(bb, name);
                 bb.Phis.Add(new Phi(phiTarget, phiOperands));
                 return phiTarget;
             }
