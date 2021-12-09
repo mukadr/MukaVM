@@ -1,0 +1,3 @@
+[submodule "src/ParseSharp"]
+	path = src/ParseSharp
+	url = https://github.com/mukadr/ParseSharp.git
