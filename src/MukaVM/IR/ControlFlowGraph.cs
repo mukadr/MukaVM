@@ -45,9 +45,9 @@ namespace MukaVM.IR
     {
         public string Name { get; set; }
 
-        public List<Instruction> Instructions { get; set; } = new();
-
         public List<Phi> Phis { get; set; } = new();
+
+        public List<Instruction> Instructions { get; set; } = new();
 
         public SortedList<string, BasicBlock> ReachedBy { get; set; } = new();
 
