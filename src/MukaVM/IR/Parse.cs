@@ -105,21 +105,19 @@ namespace MukaVM.IR
                 Optional(Whitespace)
                 .And(functionKw.And(identifier.Bind(name =>
                     openBrace.And(ZeroOrMore(instruction).Bind(instructions =>
-                        closeBrace.Map(_ => new Function(name.Value, ResolveJmpTargets(instructions, labels))))))));    
+                        closeBrace.Map(_ =>
+                        {
+                            foreach (var instruction in instructions)
+                            {
+                                if (instruction is Jmp jmp)
+                                {
+                                    jmp.Target = labels.Single(l => l.Name == jmp.Target.Name);
+                                }
+                            }
+                            return new Function(name.Value, instructions);
+                        }))))));
 
             return functionDefinition.ParseAllText(sourceText);
-        }
-
-        private static List<Instruction> ResolveJmpTargets(IEnumerable<Instruction> instructions, IEnumerable<Label> labels)
-        {
-            foreach (var instruction in instructions)
-            {
-                if (instruction is Jmp jmp)
-                {
-                    jmp.Target = labels.Single(l => l.Name == jmp.Target.Name);
-                }
-            }
-            return instructions.ToList();
         }
     }
 }
