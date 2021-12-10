@@ -65,39 +65,35 @@ namespace MukaVM.IR
 
             private SSAVar FindSSAVariable(BasicBlock bb, string name)
             {
+                // Find existing SSA variable in current basic block
                 if (bb.SSAVariables.TryGetValue(name, out var ssaVar))
                 {
                     return ssaVar;
                 }
 
-                return FindSSAVariableRecursive(bb, name);
-            }
-
-            private SSAVar FindSSAVariableRecursive(BasicBlock bb, string name)
-            {
-                var previous = bb.SSAVariables.GetValueOrDefault(name);
+                // Not found, create new SSA variable
                 var phiTarget = CreateSSAVariable(bb, name);
+
+                // Lookup PHI operands
                 var phiOperands = FindPhiOperands(bb, name);
 
-                // Avoid redundant PHI
+                // Avoid PHI with only one operand
                 var firstOperand = phiOperands.First();
                 if (phiOperands.All(p => p == firstOperand))
                 {
-                    // To avoid unused variable numbers and keep tests sane
-                    if (previous is null)
-                    {
-                        bb.SSAVariables.Remove(name);
-                    }
-                    else
-                    {
-                        bb.SSAVariables[name] = previous;
-                    }
+                    // Remove unused PHI variable
+                    bb.SSAVariables.Remove(name);
+
+                    // Decrement counter to keep the sequence easy to follow during tests
                     _varCounter--;
 
                     return firstOperand;
                 }
 
+                // Add PHI instruction to basic block
                 bb.Phis.Add(new Phi(phiTarget, phiOperands));
+
+                // Return PHI variable
                 return phiTarget;
             }
 
