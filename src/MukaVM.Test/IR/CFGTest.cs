@@ -2,7 +2,7 @@ using Xunit;
 
 namespace MukaVM.Test.IR
 {
-    public class ControlFlowGraphTest
+    public class CFGTest
     {
         [Fact]
         public void EmptyFunction_Generates_EmptyCfg()
