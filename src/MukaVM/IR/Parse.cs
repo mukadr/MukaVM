@@ -53,27 +53,29 @@ namespace MukaVM.IR
                             return new Add(v, left, right);
                         })));
 
-            var labelInstruction = identifier.Map<Instruction>(id =>
-            {
-                var l = new Label(id.Value);
-                if (labels.Any(ll => ll.Name == l.Name))
+            var labelInstruction =
+                identifier.Map<Instruction>(id =>
                 {
-                    throw new ParserException($"Label {l} already declared.");
-                }
-                labels.Add(l);
-                return l;
-            });
+                    var l = new Label(id.Value);
+                    if (labels.Any(ll => ll.Name == l.Name))
+                    {
+                        throw new ParserException($"Label {l} already declared.");
+                    }
+                    labels.Add(l);
+                    return l;
+                });
 
-            var jmpInstruction = jmpKw.And(identifier.Map<Instruction>(id =>
-            {
-                var target = jmpTargets.SingleOrDefault(t => t.Name == id.Value);
-                if (target is null)
+            var jmpInstruction =
+                jmpKw.And(identifier.Map<Instruction>(id =>
                 {
-                    target = new JmpTarget(id.Value);
-                    jmpTargets.Add(target);
-                }
-                return new Jmp(target);
-            }));
+                    var target = jmpTargets.SingleOrDefault(t => t.Name == id.Value);
+                    if (target is null)
+                    {
+                        target = new JmpTarget(id.Value);
+                        jmpTargets.Add(target);
+                    }
+                    return new Jmp(target);
+                }));
 
             var ifInstruction =
                 ifKw.And(argument.Bind(left =>
@@ -89,7 +91,8 @@ namespace MukaVM.IR
                             return new Jg(left, right, target);
                         }))))));
 
-            var retInstruction = retKw.Map<Instruction>(_ => new Ret());
+            var retInstruction =
+                retKw.Map<Instruction>(_ => new Ret());
 
             var instruction =
                 jmpInstruction
