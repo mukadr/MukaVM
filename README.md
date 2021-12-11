@@ -21,7 +21,7 @@ https://en.wikipedia.org/wiki/Static_single_assignment_form
 - [ ] Register allocation
 - [ ] Code generation
 
-## Example
+## What it looks like
 
 ### Pseudo code
 ```
