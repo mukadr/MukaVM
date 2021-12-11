@@ -1,4 +1,5 @@
 using MukaVM.IR;
+using ParseSharp;
 using Xunit;
 
 namespace MukaVM.Test.IR
@@ -75,6 +76,40 @@ namespace MukaVM.Test.IR
                 }";
 
             Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
+        }
+
+        [Fact]
+        public void FromSourceText_Throws_When_Variable_Not_Found()
+        {
+            const string sourceText = @"
+                FUNCTION variableNotFound {
+                    x = 0 + y
+                }";
+
+            Assert.Throws<ParserException>(() => Parse.FromSourceText(sourceText));
+        }
+
+        [Fact]
+        public void FromSourceText_Throws_When_Label_Not_Found()
+        {
+            const string sourceText = @"
+                FUNCTION labelNotFound {
+                    JMP notFound
+                }";
+
+            Assert.Throws<ParserException>(() => Parse.FromSourceText(sourceText));
+        }
+
+        [Fact]
+        public void FromSourceText_Throws_When_Label_Redeclared()
+        {
+            const string sourceText = @"
+                FUNCTION redeclaredLabel {
+                    lab
+                    lab
+                }";
+
+            Assert.Throws<ParserException>(() => Parse.FromSourceText(sourceText));
         }
     }
 }
