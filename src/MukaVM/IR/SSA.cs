@@ -22,21 +22,23 @@ namespace MukaVM.IR
 
         private void ConvertToSSA(BasicBlock bb)
         {
-            foreach (var instruction in bb.Instructions)
-            {
-                if (instruction is InstructionWithOperands io)
-                {
-                    UpdateSSAVariablesForOperands(bb, io);
+            bb.Instructions.ForEach(i => UpdateSSAVariablesForInstruction(bb, i));
+        }
 
-                    if (io is InstructionWithTarget it)
-                    {
-                        CreateSSAVariableForInstructionTarget(bb, it);
-                    }
+        private void UpdateSSAVariablesForInstruction(BasicBlock bb, Instruction instruction)
+        {
+            if (instruction is InstructionWithOperands io)
+            {
+                UpdateSSAVariablesForInstructionOperands(bb, io);
+
+                if (io is InstructionWithTarget it)
+                {
+                    CreateSSAVariableForInstructionTarget(bb, it);
                 }
             }
         }
 
-        private void UpdateSSAVariablesForOperands(BasicBlock bb, InstructionWithOperands io)
+        private void UpdateSSAVariablesForInstructionOperands(BasicBlock bb, InstructionWithOperands io)
         {
             for (var i = 0; i < io.Operands.Length; i++)
             {
@@ -49,51 +51,51 @@ namespace MukaVM.IR
 
         private void CreateSSAVariableForInstructionTarget(BasicBlock bb, InstructionWithTarget it)
         {
-            it.Target = CreateSSAVariable(bb, it.Target);
+            it.Target = InsertSSAVariable(bb, it.Target);
         }
 
         private SSAVar FindOrCreateSSAVariable(BasicBlock bb, Var var)
         {
-            // Find existing SSA variable in current basic block
             if (bb.SSAVariables.TryGetValue(var.Name, out var ssaVar))
             {
                 return ssaVar;
             }
 
-            // Not found, create new SSA variable
-            var phiTarget = CreateSSAVariable(bb, var);
+            return CreateSSAVariable(bb, var);
+        }
 
-            // Lookup PHI operands
-            var phiOperands = FindPhiOperands(bb, var);
+        private SSAVar CreateSSAVariable(BasicBlock bb, Var var)
+        {
+            var phiTarget = InsertSSAVariable(bb, var);
+
+            var phiOperands = LookupPhiOperands(bb, var);
 
             // Avoid PHI with only one operand
             var firstOperand = phiOperands.First();
             if (phiOperands.All(p => p == firstOperand))
             {
-                // Remove unused PHI variable
+                // Remove unused SSA variable
                 bb.SSAVariables.Remove(var.Name);
 
-                // Decrement counter to keep the sequence easy to follow during tests
+                // Decrement counter to keep tests sane
                 _variableNumber--;
 
                 return firstOperand;
             }
 
-            // Add PHI instruction to basic block
             bb.Phis.Add(new Phi(phiTarget, phiOperands));
 
-            // Return PHI variable
             return phiTarget;
         }
 
-        private SSAVar CreateSSAVariable(BasicBlock bb, Var var)
+        private SSAVar InsertSSAVariable(BasicBlock bb, Var var)
         {
             var ssaVar = new SSAVar(_variableNumber++, var);
             bb.SSAVariables[var.Name] = ssaVar;
             return ssaVar;
         }
 
-        private List<SSAVar> FindPhiOperands(BasicBlock currentBB, Var var)
+        private List<SSAVar> LookupPhiOperands(BasicBlock currentBB, Var var)
         {
             var operands = new List<SSAVar>();
             foreach (var bb in currentBB.ReachedBy)
