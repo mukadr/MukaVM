@@ -60,7 +60,6 @@ namespace MukaVM.IR
             {
                 return ssaVar;
             }
-
             return CreateSSAVariable(bb, var);
         }
 
@@ -72,7 +71,7 @@ namespace MukaVM.IR
 
             // Avoid PHI with only one operand
             var firstOperand = phiOperands.First();
-            if (phiOperands.All(p => p == firstOperand))
+            if (phiOperands.All(o => o == firstOperand))
             {
                 // Remove unused SSA variable
                 bb.SSAVariables.Remove(var.Name);
@@ -97,12 +96,9 @@ namespace MukaVM.IR
 
         private List<SSAVar> LookupPhiOperands(BasicBlock currentBB, Var var)
         {
-            var operands = new List<SSAVar>();
-            foreach (var bb in currentBB.ReachedBy)
-            {
-                operands.Add(FindOrCreateSSAVariable(bb.Value, var));
-            }
-            return operands;
+            return currentBB.ReachedBy
+                .Select(bb => FindOrCreateSSAVariable(bb.Value, var))
+                .ToList();
         }
 
         private void UpdatePhiOperands(BasicBlock bb)
@@ -112,7 +108,7 @@ namespace MukaVM.IR
                 for (var i = 0; i < phi.Operands.Count; i++)
                 {
                     // If target is inside operand list, we have a loop
-                    // Update operand with the latest version of this variable
+                    // Update operand with the latest SSA variable
                     if (phi.Operands[i] == phi.Target)
                     {
                         phi.Operands[i] = bb.SSAVariables[phi.Operands[i].Var.Name];
