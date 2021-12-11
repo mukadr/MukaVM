@@ -7,50 +7,52 @@ namespace MukaVM.IR
     {
         public static void Transform(CfgFunction function)
         {
-            new SSAPass().Transform(function);
+            new Transformer().Transform(function);
         }
 
-        private class SSAPass
+        private class Transformer
         {
-            private int _varCounter = 1;
+            private int _variableNumber = 1;
 
             public void Transform(CfgFunction function)
             {
-                foreach (var bb in function.BasicBlocks)
-                {
-                    foreach (var instruction in bb.Instructions)
-                    {
-                        if (instruction is InstructionWithOperands io)
-                        {
-                            for (var i = 0; i < io.Operands.Length; i++)
-                            {
-                                if (io.Operands[i] is Var v)
-                                {
-                                    io.Operands[i] = FindSSAVariable(bb, v.Name);
-                                }
-                            }
+                function.BasicBlocks.ForEach(ConvertToSSA);
+                function.BasicBlocks.ForEach(UpdatePhiOperands);
+            }
 
-                            if (instruction is InstructionWithTarget it)
+            private void ConvertToSSA(BasicBlock bb)
+            {
+                foreach (var instruction in bb.Instructions)
+                {
+                    if (instruction is InstructionWithOperands io)
+                    {
+                        for (var i = 0; i < io.Operands.Length; i++)
+                        {
+                            if (io.Operands[i] is Var v)
                             {
-                                it.Target = CreateSSAVariable(bb, it.Target.Name);
+                                io.Operands[i] = FindOrCreateSSAVariable(bb, v.Name);
                             }
+                        }
+
+                        if (instruction is InstructionWithTarget it)
+                        {
+                            it.Target = CreateSSAVariable(bb, it.Target.Name);
                         }
                     }
                 }
+            }
 
-                // Update PHI operands in the presence of loops
-                foreach (var bb in function.BasicBlocks)
+            private void UpdatePhiOperands(BasicBlock bb)
+            {
+                foreach (var phi in bb.Phis)
                 {
-                    foreach (var phi in bb.Phis)
+                    for (var i = 0; i < phi.Operands.Count; i++)
                     {
-                        for (var i = 0; i < phi.Operands.Count; i++)
+                        // If target is inside operand list, we have a loop
+                        // Update operand with the latest version of this variable
+                        if (phi.Operands[i] == phi.Target)
                         {
-                            // If target is inside operand list, we have a loop
-                            // Update operand with the latest version of this variable
-                            if (phi.Operands[i] == phi.Target)
-                            {
-                                phi.Operands[i] = bb.SSAVariables[phi.Operands[i].VName];
-                            }
+                            phi.Operands[i] = bb.SSAVariables[phi.Operands[i].VName];
                         }
                     }
                 }
@@ -58,12 +60,12 @@ namespace MukaVM.IR
 
             private SSAVar CreateSSAVariable(BasicBlock bb, string name)
             {
-                var ssaVar = new SSAVar(_varCounter++, name);
+                var ssaVar = new SSAVar(_variableNumber++, name);
                 bb.SSAVariables[name] = ssaVar;
                 return ssaVar;
             }
 
-            private SSAVar FindSSAVariable(BasicBlock bb, string name)
+            private SSAVar FindOrCreateSSAVariable(BasicBlock bb, string name)
             {
                 // Find existing SSA variable in current basic block
                 if (bb.SSAVariables.TryGetValue(name, out var ssaVar))
@@ -85,7 +87,7 @@ namespace MukaVM.IR
                     bb.SSAVariables.Remove(name);
 
                     // Decrement counter to keep the sequence easy to follow during tests
-                    _varCounter--;
+                    _variableNumber--;
 
                     return firstOperand;
                 }
@@ -102,7 +104,7 @@ namespace MukaVM.IR
                 var operands = new List<SSAVar>();
                 foreach (var bb in currentBB.ReachedBy)
                 {
-                    operands.Add(FindSSAVariable(bb.Value, name));
+                    operands.Add(FindOrCreateSSAVariable(bb.Value, name));
                 }
                 return operands;
             }
