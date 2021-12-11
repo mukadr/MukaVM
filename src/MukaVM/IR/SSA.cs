@@ -34,7 +34,7 @@ namespace MukaVM.IR
                             }
                         }
 
-                        if (instruction is InstructionWithTarget it)
+                        if (io is InstructionWithTarget it)
                         {
                             it.Target = CreateSSAVariable(bb, it.Target);
                         }
