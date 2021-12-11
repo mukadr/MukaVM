@@ -71,7 +71,12 @@ namespace MukaVM.IR
                 {
                     if (instruction is Jmp jmp)
                     {
-                        jmp.Target = labels.Single(l => l.Name == jmp.Target.Name);
+                        var target = labels.SingleOrDefault(l => l.Name == jmp.Target.Name);
+                        if (target is null)
+                        {
+                            throw new ParserException($"Label {jmp.Target.Name} not found.");
+                        }
+                        jmp.Target = target;
                     }
                 }
                 return instructions;
