@@ -66,25 +66,28 @@ namespace MukaVM.IR
         private SSAVar CreateSSAVariable(BasicBlock bb, Var var)
         {
             var phiTarget = InsertSSAVariable(bb, var);
-
             var phiOperands = LookupPhiOperands(bb, var);
 
-            // Avoid PHI with only one operand
-            var firstOperand = phiOperands.First();
-            if (phiOperands.All(o => o == firstOperand))
+            var ssaVar = GetSSAVariableForPhiWithSingleOperand(bb, phiOperands);
+            if (ssaVar is not null)
             {
-                // Remove unused SSA variable
-                bb.SSAVariables.Remove(var.Name);
-
-                // Decrement counter to keep tests sane
-                _variableNumber--;
-
-                return firstOperand;
+                return ssaVar;
             }
 
             bb.Phis.Add(new Phi(phiTarget, phiOperands));
-
             return phiTarget;
+        }
+
+        private SSAVar? GetSSAVariableForPhiWithSingleOperand(BasicBlock bb, List<SSAVar> operands)
+        {
+            var firstOperand = operands.First();
+            if (operands.All(o => o == firstOperand))
+            {
+                bb.SSAVariables.Remove(firstOperand.Var.Name);
+                _variableNumber--;
+                return firstOperand;
+            }
+            return null;
         }
 
         private SSAVar InsertSSAVariable(BasicBlock bb, Var var)
