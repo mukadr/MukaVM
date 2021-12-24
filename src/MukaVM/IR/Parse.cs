@@ -101,6 +101,11 @@ namespace MukaVM.IR
                 integer.Map<Value>(i => new Int(i.Value))
                 .Or(identifier.Map<Value>(id => FindVariable(id.Value)));
 
+            var movInstruction =
+                identifier.Bind(id =>
+                    assign.And(argument.Map<Instruction>(value =>
+                        new Mov(FindOrCreateVariable(id.Value), value))));
+
             var addInstruction =
                 identifier.Bind(id =>
                     assign.And(argument).Bind(left =>
@@ -129,6 +134,7 @@ namespace MukaVM.IR
                 .Or(ifInstruction)
                 .Or(retInstruction)
                 .Or(addInstruction)
+                .Or(movInstruction)
                 .Or(labelInstruction);
 
             var functionDefinition =

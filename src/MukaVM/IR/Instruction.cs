@@ -51,6 +51,15 @@ namespace MukaVM.IR
         }
     }
 
+    public class Mov : InstructionWithTarget
+    {
+        public Mov(Var target, Value value)
+            : base(target, value)
+        { }
+
+        public override string ToString() => Target + " = " + Operands[0];
+    }
+
     public class Add : InstructionWithTarget
     {
         public Add(Var target, Value value1, Value value2)

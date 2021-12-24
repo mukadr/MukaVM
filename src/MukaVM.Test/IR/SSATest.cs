@@ -9,7 +9,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 10
+                    x = 10
                     y = x + 1
                     RET
                 }";
@@ -17,7 +17,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        v1 = 0 + 10
+                        v1 = 10
                         v2 = v1 + 1
                         RET
                     }
@@ -31,7 +31,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 10
+                    x = 10
                     IF x > 5: gt5
                     y = x + 1
                     JMP end1
@@ -51,7 +51,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        v1 = 0 + 10
+                        v1 = 10
                         IF v1 > 5: BB3
                         <BB2, BB3>
                     }
@@ -99,7 +99,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 1
+                    x = 1
                     again
                     x = x + 1
                     IF x > 10: end
@@ -111,7 +111,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        v1 = 0 + 1
+                        v1 = 1
                         <BB2>
                     }
                     BB2 {
@@ -140,7 +140,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 1
+                    x = 1
                     again
                     x = x + 1
                     IF x > 5: end1
@@ -156,7 +156,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        v1 = 0 + 1
+                        v1 = 1
                         <BB2>
                     }
                     BB2 {

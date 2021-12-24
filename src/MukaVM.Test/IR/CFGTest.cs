@@ -23,7 +23,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 10
+                    x = 10
                     y = x + x
                     RET
                 }";
@@ -31,7 +31,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        x = 0 + 10
+                        x = 10
                         y = x + x
                         RET
                     }
@@ -45,7 +45,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 1
+                    x = 1
                     IF x > 0: add5
                     x = x + 2
                     JMP exit
@@ -58,7 +58,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        x = 0 + 1
+                        x = 1
                         IF x > 0: BB3
                         <BB2, BB3>
                     }
@@ -87,7 +87,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION f {
-                    x = 0 + 1
+                    x = 1
                     again
                     x = x + 1
                     IF x > 10: end
@@ -99,7 +99,7 @@ namespace MukaVM.Test.IR
             const string expected = @"
                 FUNCTION f {
                     BB1 {
-                        x = 0 + 1
+                        x = 1
                         <BB2>
                     }
                     BB2 {

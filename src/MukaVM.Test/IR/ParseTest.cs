@@ -18,11 +18,22 @@ namespace MukaVM.Test.IR
         }
 
         [Fact]
+        public void FromSourceText_Parses_Assignment()
+        {
+            const string sourceText = @"
+                FUNCTION simpleAssignment {
+                    x = 5
+                }";
+
+            Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
+        }
+
+        [Fact]
         public void FromSourceText_Parses_Addition()
         {
             const string sourceText = @"
                 FUNCTION simpleAddition {
-                    x = 0 + 10
+                    x = 3 + 10
                 }";
 
             Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
@@ -46,7 +57,7 @@ namespace MukaVM.Test.IR
             const string sourceText = @"
                 FUNCTION jmps {
                     JMP end
-                    x = 0 + 10
+                    x = 10
                     end
                 }";
 
@@ -58,7 +69,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION vars {
-                    x = 0 + 10
+                    x = 10
                     y = x + 5
                 }";
 
@@ -70,7 +81,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION jmps {
-                    x = 0 + 8
+                    x = 8
                     IF x > 5: greater
                     greater
                 }";
@@ -83,7 +94,7 @@ namespace MukaVM.Test.IR
         {
             const string sourceText = @"
                 FUNCTION variableNotFound {
-                    x = 0 + y
+                    x = y
                 }";
 
             Assert.Throws<ParserException>(() => Parse.FromSourceText(sourceText));

@@ -35,11 +35,11 @@ FUNCTION sample {
 
 ### Intermediate representation (IR)
 
-Available instructions: addition, jump, labels, return
+Available instructions: assignment, addition, jump, labels, return
 
 ```
 FUNCTION sample {
-    x = 0 + 1
+    x = 1
     again
     x = x + 1
     IF x > 10: end
@@ -54,7 +54,7 @@ FUNCTION sample {
 ```
 FUNCTION f {
     BB1 {
-        v1 = 0 + 1
+        v1 = 1
         <BB2>
     }
     BB2 {
