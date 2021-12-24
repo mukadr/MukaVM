@@ -83,8 +83,10 @@ namespace MukaVM.Test.IR
                 FUNCTION jmps {
                     x = 8
                     IF x = 1: equals
+                    IF x != 2: notEquals
                     IF x > 5: greater
                     equals
+                    notEquals
                     greater
                 }";
 

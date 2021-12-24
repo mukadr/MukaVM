@@ -34,6 +34,7 @@ namespace MukaVM.IR
             return op switch
             {
                 "=" => new Je(left, right, target),
+                "!=" => new Jne(left, right, target),
                 ">" => new Jg(left, right, target),
                 _ => throw new ArgumentException(op),
             };
@@ -45,17 +46,6 @@ namespace MukaVM.IR
         public Var Target { get; set; }
 
         public InstructionWithTarget(Var target, params Value[] operands)
-            : base(operands)
-        {
-            Target = target;
-        }
-    }
-
-    public abstract class JmpInstruction : InstructionWithOperands
-    {
-        public Label Target { get; set; }
-
-        public JmpInstruction(Label target, params Value[] operands)
             : base(operands)
         {
             Target = target;
@@ -92,6 +82,18 @@ namespace MukaVM.IR
         public override string ToString() => Name;
     }
 
+
+    public abstract class JmpInstruction : InstructionWithOperands
+    {
+        public Label Target { get; set; }
+
+        public JmpInstruction(Label target, params Value[] operands)
+            : base(operands)
+        {
+            Target = target;
+        }
+    }
+
     public class Jmp : JmpInstruction
     {
         public Jmp(Label target, params Value[] values)
@@ -108,6 +110,15 @@ namespace MukaVM.IR
         { }
 
         public override string ToString() => "IF " + Operands[0] + " = " + Operands[1] + ": " + Target;
+    }
+
+    public class Jne : Jmp
+    {
+        public Jne(Value value1, Value value2, Label target)
+            : base(target, value1, value2)
+        { }
+
+        public override string ToString() => "IF " + Operands[0] + " != " + Operands[1] + ": " + Target;
     }
 
     public class Jg : Jmp
