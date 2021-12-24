@@ -82,7 +82,9 @@ namespace MukaVM.Test.IR
             const string sourceText = @"
                 FUNCTION jmps {
                     x = 8
+                    IF x = 1: equals
                     IF x > 5: greater
+                    equals
                     greater
                 }";
 

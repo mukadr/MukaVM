@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MukaVM.IR
@@ -26,6 +27,16 @@ namespace MukaVM.IR
         public InstructionWithOperands(params Value[] operands)
         {
             Operands = operands;
+        }
+
+        public static InstructionWithOperands CreateIfInstruction(Value left, string op, Value right, Label target)
+        {
+            return op switch
+            {
+                "=" => new Je(left, right, target),
+                ">" => new Jg(left, right, target),
+                _ => throw new ArgumentException(op),
+            };
         }
     }
 
@@ -88,6 +99,15 @@ namespace MukaVM.IR
         { }
 
         public override string ToString() => "JMP " + Target;
+    }
+
+    public class Je : Jmp
+    {
+        public Je(Value value1, Value value2, Label target)
+            : base(target, value1, value2)
+        { }
+
+        public override string ToString() => "IF " + Operands[0] + " = " + Operands[1] + ": " + Target;
     }
 
     public class Jg : Jmp

@@ -92,7 +92,9 @@ namespace MukaVM.IR
             var retKw = Token("RET");
             var assign = Token("=");
             var plus = Token("+");
+            var eq = Token("=");
             var gt = Token(">");
+            var conditional = eq.Or(gt);
             var colon = Token(":");
             var openBrace = Token("{");
             var closeBrace = Token("}");
@@ -122,9 +124,11 @@ namespace MukaVM.IR
 
             var ifInstruction =
                 ifKw.And(argument.Bind(left =>
-                    gt.And(argument.Bind(right =>
-                        colon.And(identifier.Map<Instruction>(labelName =>
-                            new Jg(left, right, FindOrCreateJmpTarget(labelName.Value))))))));
+                    conditional.Bind(op =>
+                        argument.Bind(right =>
+                            colon.And(identifier.Map<Instruction>(labelName =>
+                                InstructionWithOperands.CreateIfInstruction(
+                                    left, op.Value, right, FindOrCreateJmpTarget(labelName.Value))))))));
 
             var retInstruction =
                 retKw.Map<Instruction>(_ => new Ret());
