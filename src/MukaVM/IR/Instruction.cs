@@ -38,6 +38,7 @@ namespace MukaVM.IR
                 ">" => new Jg(left, right, target),
                 "<" => new Jl(left, right, target),
                 ">=" => new Jge(left, right, target),
+                "<=" => new Jle(left, right, target),
                 _ => throw new ArgumentException(op),
             };
         }
@@ -147,6 +148,15 @@ namespace MukaVM.IR
         { }
 
         public override string ToString() => "IF " + Operands[0] + " >= " + Operands[1] + ": " + Target;
+    }
+
+    public class Jle : Jmp
+    {
+        public Jle(Value value1, Value value2, Label target)
+            : base(target, value1, value2)
+        { }
+
+        public override string ToString() => "IF " + Operands[0] + " <= " + Operands[1] + ": " + Target;
     }
 
     public class Ret : Instruction
