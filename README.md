@@ -35,7 +35,7 @@ FUNCTION sample {
 
 ### Intermediate representation (IR)
 
-Available instructions: assignment, addition, jump, labels, return
+Available instructions: assignment, addition, jump, conditional jump, label, return
 
 ```
 FUNCTION sample {
