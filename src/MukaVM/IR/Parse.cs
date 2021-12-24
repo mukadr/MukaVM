@@ -96,7 +96,8 @@ namespace MukaVM.IR
             var ne = Token("!=");
             var gt = Token(">");
             var lt = Token("<");
-            var conditional = eq.Or(ne).Or(gt).Or(lt);
+            var ge = Token(">=");
+            var conditional = eq.Or(ne).Or(ge).Or(gt).Or(lt);
             var colon = Token(":");
             var openBrace = Token("{");
             var closeBrace = Token("}");
