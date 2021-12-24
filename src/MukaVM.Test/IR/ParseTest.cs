@@ -84,10 +84,12 @@ namespace MukaVM.Test.IR
                     x = 8
                     IF x = 1: equals
                     IF x != 2: notEquals
-                    IF x > 5: greater
+                    IF x > 3: greater
+                    IF x < 4: lesser
                     equals
                     notEquals
                     greater
+                    lesser
                 }";
 
             Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
