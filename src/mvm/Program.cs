@@ -11,4 +11,4 @@ var sourceText = File.ReadAllText(args[0]);
 var cfg = CFG.Convert(Parse.FromSourceText(sourceText));
 SSA.Transform(cfg);
 
-Console.WriteLine(cfg);
+Console.WriteLine(Format.FormatSource(cfg.ToString()));
