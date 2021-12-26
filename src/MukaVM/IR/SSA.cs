@@ -65,6 +65,12 @@ namespace MukaVM.IR
 
         private SSAVar CreateSSAVariable(BasicBlock bb, Var var)
         {
+            // Single predecessor, no PHI needed
+            if (bb.ReachedBy.Count == 1)
+            {
+                return FindOrCreateSSAVariable(bb.ReachedBy.Single().Value, var);
+            }
+
             var phiTarget = InsertSSAVariable(bb, var);
             var phiOperands = LookupPhiOperands(bb, var);
 
