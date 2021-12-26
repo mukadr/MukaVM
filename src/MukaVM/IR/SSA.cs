@@ -114,10 +114,29 @@ namespace MukaVM.IR
                     // Update operand with the latest SSA variable
                     if (phi.Operands[i] == phi.Target)
                     {
-                        phi.Operands[i] = bb.SSAVariables[phi.Operands[i].Var.Name];
+                        phi.Operands[i] = FindLatestSSAVar(bb, bb, phi.Operands[i]);
                     }
                 }
             }
+        }
+
+        private SSAVar FindLatestSSAVar(BasicBlock finalBB, BasicBlock searchBB, SSAVar current)
+        {
+            foreach (var bb in searchBB.ReachedBy)
+            {
+                if (bb.Value.SSAVariables.TryGetValue(current.Var.Name, out var v) && v.N > current.N)
+                {
+                    current = v;
+                }
+
+                if (bb.Value == finalBB)
+                {
+                    break;
+                }
+
+                current = FindLatestSSAVar(finalBB, bb.Value, current);
+            }
+            return current;
         }
     }
 }
