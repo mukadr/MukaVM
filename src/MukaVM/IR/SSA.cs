@@ -137,11 +137,12 @@ namespace MukaVM.IR
 
                 if (bb.Value == finalBB)
                 {
-                    break;
+                    continue;
                 }
 
                 current = FindLatestSSAVar(finalBB, bb.Value, current);
             }
+
             return current;
         }
     }
