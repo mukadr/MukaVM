@@ -102,13 +102,13 @@ namespace MukaVM.IR
             var firstOperand = operands.First();
             if (operands.All(o => o == firstOperand))
             {
-                RemoveSSAVariable(bb, firstOperand.Var.Name);
+                RemoveUnneededSSAVariable(bb, firstOperand.Var.Name);
                 return firstOperand;
             }
             return null;
         }
 
-        private void RemoveSSAVariable(BasicBlock bb, string varName)
+        private void RemoveUnneededSSAVariable(BasicBlock bb, string varName)
         {
             bb.SSAVariables.Remove(varName);
             _variableNumber--;
