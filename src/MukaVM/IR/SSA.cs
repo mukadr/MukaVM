@@ -60,6 +60,7 @@ namespace MukaVM.IR
             {
                 return ssaVar;
             }
+
             return CreateSSAVariable(bb, var);
         }
 
@@ -71,20 +72,25 @@ namespace MukaVM.IR
                 return FindOrCreateSSAVariable(bb.ReachedBy.Single().Value, var);
             }
 
+            return CreatePhiForSSAVariable(bb, var);
+        }
+
+        private SSAVar CreatePhiForSSAVariable(BasicBlock bb, Var var)
+        {
             var phiTarget = InsertSSAVariable(bb, var);
             var phiOperands = LookupPhiOperands(bb, var);
 
-            var ssaVar = GetSSAVariableForPhiWithSingleOperand(bb, phiOperands);
-            if (ssaVar is not null)
+            var ssaVarWithoutPhi = RemoveUnneededPhi(bb, phiOperands);
+            if (ssaVarWithoutPhi is not null)
             {
-                return ssaVar;
+                return ssaVarWithoutPhi;
             }
 
             bb.Phis.Add(new Phi(phiTarget, phiOperands));
             return phiTarget;
         }
 
-        private SSAVar? GetSSAVariableForPhiWithSingleOperand(BasicBlock bb, List<SSAVar> operands)
+        private SSAVar? RemoveUnneededPhi(BasicBlock bb, List<SSAVar> operands)
         {
             var firstOperand = operands.First();
             if (operands.All(o => o == firstOperand))
