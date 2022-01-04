@@ -90,6 +90,13 @@ namespace MukaVM.IR
             return phiTarget;
         }
 
+        private SSAVar InsertSSAVariable(BasicBlock bb, Var var)
+        {
+            var ssaVar = new SSAVar(_variableNumber++, var);
+            bb.SSAVariables[var.Name] = ssaVar;
+            return ssaVar;
+        }
+
         private SSAVar? RemoveUnneededPhi(BasicBlock bb, List<SSAVar> operands)
         {
             var firstOperand = operands.First();
@@ -99,13 +106,6 @@ namespace MukaVM.IR
                 return firstOperand;
             }
             return null;
-        }
-
-        private SSAVar InsertSSAVariable(BasicBlock bb, Var var)
-        {
-            var ssaVar = new SSAVar(_variableNumber++, var);
-            bb.SSAVariables[var.Name] = ssaVar;
-            return ssaVar;
         }
 
         private void RemoveSSAVariable(BasicBlock bb, string varName)
