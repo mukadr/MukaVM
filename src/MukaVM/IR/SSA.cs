@@ -95,8 +95,7 @@ namespace MukaVM.IR
             var firstOperand = operands.First();
             if (operands.All(o => o == firstOperand))
             {
-                bb.SSAVariables.Remove(firstOperand.Var.Name);
-                _variableNumber--;
+                RemoveSSAVariable(bb, firstOperand.Var.Name);
                 return firstOperand;
             }
             return null;
@@ -107,6 +106,12 @@ namespace MukaVM.IR
             var ssaVar = new SSAVar(_variableNumber++, var);
             bb.SSAVariables[var.Name] = ssaVar;
             return ssaVar;
+        }
+
+        private void RemoveSSAVariable(BasicBlock bb, string varName)
+        {
+            bb.SSAVariables.Remove(varName);
+            _variableNumber--;
         }
 
         private List<SSAVar> LookupPhiOperands(BasicBlock currentBB, Var var)
