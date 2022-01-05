@@ -131,30 +131,30 @@ namespace MukaVM.IR
                     // Update operand with the latest SSA variable
                     if (phi.Operands[i] == phi.Target)
                     {
-                        phi.Operands[i] = FindLatestSSAVar(bb, bb, phi.Operands[i]);
+                        phi.Operands[i] = FindLatestSSAVar(bb, phi.Operands[i], new[] { bb });
                     }
                 }
             }
         }
 
-        private SSAVar FindLatestSSAVar(BasicBlock finalBB, BasicBlock searchBB, SSAVar current)
+        private SSAVar FindLatestSSAVar(BasicBlock search, SSAVar ssaVar, IEnumerable<BasicBlock> visited)
         {
-            foreach (var bb in searchBB.ReachedBy)
+            foreach (var bb in search.ReachedBy)
             {
-                if (bb.Value.SSAVariables.TryGetValue(current.Var.Name, out var v) && v.N > current.N)
+                if (bb.Value.SSAVariables.TryGetValue(ssaVar.Var.Name, out var v) && v.N > ssaVar.N)
                 {
-                    current = v;
+                    ssaVar = v;
                 }
 
-                if (bb.Value == finalBB)
+                if (visited.Contains(bb.Value))
                 {
                     continue;
                 }
 
-                current = FindLatestSSAVar(finalBB, bb.Value, current);
+                ssaVar = FindLatestSSAVar(bb.Value, ssaVar, visited.Concat(new[] { bb.Value }));
             }
 
-            return current;
+            return ssaVar;
         }
     }
 }
