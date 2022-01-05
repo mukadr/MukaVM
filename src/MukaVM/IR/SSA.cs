@@ -14,7 +14,7 @@ namespace MukaVM.IR
             new SSA().TransformFunction(function);
         }
 
-        public void TransformFunction(CfgFunction function)
+        private void TransformFunction(CfgFunction function)
         {
             function.BasicBlocks.ForEach(ConvertToSSA);
             function.BasicBlocks.ForEach(UpdatePhiOperands);
