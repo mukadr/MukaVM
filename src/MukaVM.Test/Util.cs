@@ -1,3 +1,4 @@
+using MukaVM.Gen.Amd64;
 using MukaVM.IR;
 using Xunit;
 
@@ -15,6 +16,17 @@ namespace MukaVM.Test
             var cfgFunction = CFG.Convert(Parse.FromSourceText(actual));
 
             SSA.Transform(cfgFunction);
+
+            AssertSourceEquals(expected, cfgFunction.ToString());
+        }
+
+        internal static void AssertAmd64Equals(string expected, string actual)
+        {
+            var cfgFunction = CFG.Convert(Parse.FromSourceText(actual));
+
+            SSA.Transform(cfgFunction);
+
+            RegAlloc.Transform(cfgFunction);
 
             AssertSourceEquals(expected, cfgFunction.ToString());
         }
