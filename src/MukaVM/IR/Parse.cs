@@ -43,11 +43,11 @@ namespace MukaVM.IR
 
             Label CreateLabel(string labelName)
             {
-                var label = new Label(labelName);
-                if (labels.Any(l => l.Name == label.Name))
+                if (labels.Any(l => l.Name == labelName))
                 {
-                    throw new ParserException($"Label {label} already declared.");
+                    throw new ParserException($"Label {labelName} already declared.");
                 }
+                var label = new Label(labelName);
                 labels.Add(label);
                 return label;
             }
