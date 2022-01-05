@@ -17,6 +17,8 @@ namespace MukaVM.IR
         public static Function FromSourceText(string sourceText)
         {
             var variables = new List<Var>();
+            var labels = new List<Label>();
+            var jmpTargets = new List<JmpTarget>();
 
             Var FindVariable(string name)
             {
@@ -39,8 +41,6 @@ namespace MukaVM.IR
                 return @var;
             }
 
-            var labels = new List<Label>();
-
             Label CreateLabel(string labelName)
             {
                 if (labels.Any(l => l.Name == labelName))
@@ -51,8 +51,6 @@ namespace MukaVM.IR
                 labels.Add(label);
                 return label;
             }
-
-            var jmpTargets = new List<JmpTarget>();
 
             JmpTarget FindOrCreateJmpTarget(string labelName)
             {
