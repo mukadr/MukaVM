@@ -39,12 +39,12 @@ namespace MukaVM.Gen.Amd64
 
     public class RegAlloc
     {
-        private readonly List<Register> _availableRegisters;
+        private readonly IEnumerable<Register> _availableRegisters;
 
         private readonly HashSet<Reg> _busyRegs = new();
         private readonly HashSet<(SSAVar, int)> _savedVars = new();
 
-        private RegAlloc(List<Register> availableRegisters)
+        private RegAlloc(IEnumerable<Register> availableRegisters)
         {
             _availableRegisters = availableRegisters;
         }
@@ -66,7 +66,7 @@ namespace MukaVM.Gen.Amd64
             return null;
         }
 
-        private Reg? GetCurrentReg(SSAVar ssaVar)
+        private Reg? GetRegForSSAVar(SSAVar ssaVar)
         {
             return _busyRegs.SingleOrDefault(r => r.SSAVar == ssaVar);
         }
@@ -81,6 +81,28 @@ namespace MukaVM.Gen.Amd64
             for (var index = 0; index < bb.Instructions.Count; index++)
             {
                 UseRegisterForInstruction(bb, bb.Instructions[index], index);
+            }
+
+            ReplacePhiWithMov(bb);
+        }
+
+        private void ReplacePhiWithMov(BasicBlock bb)
+        {
+            // Generate MOV for PHIs
+            foreach (var next in bb.FollowedBy)
+            {
+                foreach (var phi in next.Value.Phis)
+                {
+                    foreach (var v in phi.Operands)
+                    {
+                        if (bb.SSAVariables.Any(ssa => ssa.Value == v))
+                        {
+                            var mov = new Mov(phi.Target, v);
+                            next.Value.Instructions.Insert(0, mov);
+                        }
+                    }
+                }
+                next.Value.Phis.Clear();
             }
         }
 
@@ -103,7 +125,7 @@ namespace MukaVM.Gen.Amd64
             {
                 if (io.Operands[i] is SSAVar ssaVar)
                 {
-                    var reg = GetCurrentReg(ssaVar);
+                    var reg = GetRegForSSAVar(ssaVar);
                     if (reg is null)
                     {
                         var saved = _savedVars.Single(sv => sv.Item1 == ssaVar);
@@ -119,7 +141,7 @@ namespace MukaVM.Gen.Amd64
         {
             if (it.Target is SSAVar ssaVar)
             {
-                var reg = GetCurrentReg(ssaVar);
+                var reg = GetRegForSSAVar(ssaVar);
                 if (reg is null)
                 {
                     var register = GetAvailableRegister();

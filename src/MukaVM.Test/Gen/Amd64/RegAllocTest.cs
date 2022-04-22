@@ -144,5 +144,83 @@ namespace MukaVM.Test.IR
 
             Util.AssertAmd64Equals(expected, sourceText);
         }
+
+        [Fact]
+        public void Allocates_Between_Mulitple_Basic_Blocks()
+        {
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 1
+                    again
+                    x = x + 1
+                    IF x > 10: exit
+                    JMP again
+                    exit
+                    RET
+                }";
+
+            const string expected = @"
+                FUNCTION f {
+                    BB1 {
+                        RAX = 1
+                        <BB2>
+                    }
+                    BB2 {
+                        <BB1, BB3>
+                        RBX = RAX
+                        MEM[0] = RAX
+                        RAX = RBX + 1
+                        IF RAX > 10: BB4
+                        <BB3, BB4>
+                    }
+                    BB3 {
+                        <BB2>
+                        JMP BB2
+                        <BB2>
+                    }
+                    BB4 {
+                        <BB2>
+                        RET
+                    }
+                }";
+
+            Util.AssertAmd64Equals(expected, sourceText);
+        }
+
+        [Fact]
+        public void Converts_PHI_Into_Mov()
+        {
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 1
+                    IF x > 10: yeah
+                    x = 2
+                    yeah
+                    x = 3
+                    RET
+                }";
+
+            const string expected = @"
+                FUNCTION f {
+                    BB1 {
+                        RAX = 1
+                        IF RAX > 10: BB3
+                        <BB2, BB3>
+                    }
+                    BB2 {
+                        <BB1>
+                        RBX = 2
+                        <BB3>
+                    }
+                    BB3 {
+                        <BB1, BB2>
+                        MEM[0] = RAX
+                        RAX = 3
+                        RET
+                    }
+                }";
+
+            Util.AssertAmd64Equals(expected, sourceText);
+        }
     }
 }
