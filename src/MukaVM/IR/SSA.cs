@@ -146,12 +146,10 @@ namespace MukaVM.IR
                     ssaVar = v;
                 }
 
-                if (visited.Contains(bb.Value))
+                if (!visited.Contains(bb.Value))
                 {
-                    continue;
+                    ssaVar = FindLatestSSAVar(bb.Value, ssaVar, visited.Concat(new[] { bb.Value }));
                 }
-
-                ssaVar = FindLatestSSAVar(bb.Value, ssaVar, visited.Concat(new[] { bb.Value }));
             }
 
             return ssaVar;
