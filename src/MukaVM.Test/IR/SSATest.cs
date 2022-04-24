@@ -191,5 +191,56 @@ namespace MukaVM.Test.IR
 
             Util.AssertSSAEquals(expected, sourceText);
         }
+
+        [Fact]
+        public void Test_With_Multiple_Variables()
+        {
+            const string sourceText = @"
+                FUNCTION f {
+                    x = 1
+                    y = 2
+                    a = 0
+                    again
+                    IF x > 9: exit
+                    a = a + y
+                    x = x + 1
+                    JMP again
+                    exit
+                    z = a + y
+                    RET
+                }";
+
+            const string expected = @"
+                FUNCTION f {
+                    BB1 {
+                        v1 = 1
+                        v2 = 2
+                        v3 = 0
+                        <BB2>
+                    }
+                    BB2 {
+                        <BB1, BB3>
+                        v4 = PHI(v1, v8)
+                        v5 = PHI(v3, v7)
+                        v6 = PHI(v2, v6)
+                        IF v4 > 9: BB4
+                        <BB3, BB4>
+                    }
+                    BB3 {
+                        <BB2>
+                        v7 = v5 + v6
+                        v8 = v4 + 1
+                        JMP BB2
+                        <BB2>
+                    }
+                    BB4 {
+                        <BB2>
+                        v9 = v5 + v6
+                        RET
+                    }
+                }";
+
+            Util.AssertSSAEquals(expected, sourceText);
+        }
     }
 }
