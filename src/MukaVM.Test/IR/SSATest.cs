@@ -53,38 +53,26 @@ namespace MukaVM.Test.IR
                     BB1 {
                         v1 = 10
                         IF v1 > 5: BB3
-                        <BB2, BB3>
                     }
                     BB2 {
-                        <BB1>
                         v2 = v1 + 1
                         JMP BB4
-                        <BB4>
                     }
                     BB3 {
-                        <BB1>
                         v3 = v1 + 3
-                        <BB4>
                     }
                     BB4 {
-                        <BB2, BB3>
                         v4 = PHI(v2, v3)
                         IF v4 > 10: BB6
-                        <BB5, BB6>
                     }
                     BB5 {
-                        <BB4>
                         v5 = v4 + 5
                         JMP BB7
-                        <BB7>
                     }
                     BB6 {
-                        <BB4>
                         v6 = v4 + 1
-                        <BB7>
                     }
                     BB7 {
-                        <BB5, BB6>
                         v7 = PHI(v5, v6)
                         v8 = v7 + v4
                         RET
@@ -112,22 +100,16 @@ namespace MukaVM.Test.IR
                 FUNCTION f {
                     BB1 {
                         v1 = 1
-                        <BB2>
                     }
                     BB2 {
-                        <BB1, BB3>
                         v2 = PHI(v1, v3)
                         v3 = v2 + 1
                         IF v3 > 10: BB4
-                        <BB3, BB4>
                     }
                     BB3 {
-                        <BB2>
                         JMP BB2
-                        <BB2>
                     }
                     BB4 {
-                        <BB2>
                         RET
                     }
                 }";
@@ -157,32 +139,22 @@ namespace MukaVM.Test.IR
                 FUNCTION f {
                     BB1 {
                         v1 = 1
-                        <BB2>
                     }
                     BB2 {
-                        <BB1, BB4>
                         v2 = PHI(v1, v3)
                         v3 = v2 + 1
                         IF v3 > 5: BB5
-                        <BB3, BB5>
                     }
                     BB3 {
-                        <BB2>
                         IF v3 > 10: BB6
-                        <BB4, BB6>
                     }
                     BB4 {
-                        <BB3>
                         JMP BB2
-                        <BB2>
                     }
                     BB5 {
-                        <BB2>
                         v4 = 10 + v3
-                        <BB6>
                     }
                     BB6 {
-                        <BB3, BB5>
                         v5 = PHI(v3, v4)
                         v6 = v5 + 5
                         RET
@@ -216,25 +188,19 @@ namespace MukaVM.Test.IR
                         v1 = 1
                         v2 = 2
                         v3 = 0
-                        <BB2>
                     }
                     BB2 {
-                        <BB1, BB3>
                         v4 = PHI(v1, v8)
                         v5 = PHI(v3, v7)
                         v6 = PHI(v2, v6)
                         IF v4 > 9: BB4
-                        <BB3, BB4>
                     }
                     BB3 {
-                        <BB2>
                         v7 = v5 + v6
                         v8 = v4 + 1
                         JMP BB2
-                        <BB2>
                     }
                     BB4 {
-                        <BB2>
                         v9 = v5 + v6
                         RET
                     }

@@ -15,14 +15,16 @@ namespace MukaVM.IR
             Name = name;
         }
 
-        public override string ToString()
+        public override string ToString() => ConvertToString();
+
+        public string ConvertToString(bool emitReachedByAndFollowedBy = false)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine("FUNCTION " + Name + " {");
             foreach (var bb in BasicBlocks)
             {
-                sb.AppendLine(bb.ToString());
+                sb.AppendLine(bb.ConvertToString(emitReachedByAndFollowedBy));
             }
             sb.AppendLine("}");
 
@@ -65,13 +67,15 @@ namespace MukaVM.IR
             Name = name;
         }
 
-        public override string ToString()
+        public override string ToString() => ConvertToString();
+
+        public string ConvertToString(bool emitReachedByAndFollowedBy = false)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine(Format.Indent(1) + Name + " {");
 
-            if (ReachedBy.Count > 0)
+            if (emitReachedByAndFollowedBy && ReachedBy.Count > 0)
             {
                 sb.AppendLine(Format.Indent(2) + "<" + string.Join(", ", ReachedBy.Select(kv => kv.Key)) + ">");
             }
@@ -86,7 +90,7 @@ namespace MukaVM.IR
                 sb.AppendLine(Format.Indent(2) + instruction.ToString());
             }
 
-            if (FollowedBy.Count > 0)
+            if (emitReachedByAndFollowedBy && FollowedBy.Count > 0)
             {
                 sb.AppendLine(Format.Indent(2) + "<" + string.Join(", ", FollowedBy.Select(kv => kv.Key)) + ">");
             }
