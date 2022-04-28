@@ -1,166 +1,165 @@
 using System;
 using System.Collections.Generic;
 
-namespace MukaVM.IR
+namespace MukaVM.IR;
+
+public abstract class Instruction { }
+
+public class Phi : Instruction
 {
-    public abstract class Instruction { }
+    public SSAVar Target { get; set; }
 
-    public class Phi : Instruction
+    public List<SSAVar> Operands { get; set; }
+
+    public Phi(SSAVar target, List<SSAVar> operands)
     {
-        public SSAVar Target { get; set; }
+        Target = target;
+        Operands = operands;
+    }
 
-        public List<SSAVar> Operands { get; set; }
+    public override string ToString() => Target + " = PHI(" + string.Join(", ", Operands) + ")";
+}
 
-        public Phi(SSAVar target, List<SSAVar> operands)
+public abstract class InstructionWithOperands : Instruction
+{
+    public Value[] Operands { get; set; }
+
+    public InstructionWithOperands(params Value[] operands)
+    {
+        Operands = operands;
+    }
+
+    public static InstructionWithOperands CreateIfInstruction(Value left, string op, Value right, Label target)
+    {
+        return op switch
         {
-            Target = target;
-            Operands = operands;
-        }
-
-        public override string ToString() => Target + " = PHI(" + string.Join(", ", Operands) + ")";
+            "=" => new Je(left, right, target),
+            "!=" => new Jne(left, right, target),
+            ">" => new Jg(left, right, target),
+            "<" => new Jl(left, right, target),
+            ">=" => new Jge(left, right, target),
+            "<=" => new Jle(left, right, target),
+            _ => throw new ArgumentException(op),
+        };
     }
+}
 
-    public abstract class InstructionWithOperands : Instruction
+public abstract class InstructionWithTarget : InstructionWithOperands
+{
+    public Var Target { get; set; }
+
+    public InstructionWithTarget(Var target, params Value[] operands)
+        : base(operands)
     {
-        public Value[] Operands { get; set; }
-
-        public InstructionWithOperands(params Value[] operands)
-        {
-            Operands = operands;
-        }
-
-        public static InstructionWithOperands CreateIfInstruction(Value left, string op, Value right, Label target)
-        {
-            return op switch
-            {
-                "=" => new Je(left, right, target),
-                "!=" => new Jne(left, right, target),
-                ">" => new Jg(left, right, target),
-                "<" => new Jl(left, right, target),
-                ">=" => new Jge(left, right, target),
-                "<=" => new Jle(left, right, target),
-                _ => throw new ArgumentException(op),
-            };
-        }
+        Target = target;
     }
+}
 
-    public abstract class InstructionWithTarget : InstructionWithOperands
+public class Mov : InstructionWithTarget
+{
+    public Mov(Var target, Value value)
+        : base(target, value)
+    { }
+
+    public override string ToString() => Target + " = " + Operands[0];
+}
+
+public class Add : InstructionWithTarget
+{
+    public Add(Var target, Value value1, Value value2)
+        : base(target, value1, value2)
+    { }
+
+    public override string ToString() => Target + " = " + Operands[0] + " + " + Operands[1];
+}
+
+public class Label : Instruction
+{
+    public string Name { get; set; }
+
+    public Label(string name)
     {
-        public Var Target { get; set; }
-
-        public InstructionWithTarget(Var target, params Value[] operands)
-            : base(operands)
-        {
-            Target = target;
-        }
+        Name = name;
     }
 
-    public class Mov : InstructionWithTarget
+    public override string ToString() => Name;
+}
+
+public abstract class JmpInstruction : InstructionWithOperands
+{
+    public Label Target { get; set; }
+
+    public JmpInstruction(Label target, params Value[] operands)
+        : base(operands)
     {
-        public Mov(Var target, Value value)
-            : base(target, value)
-        { }
-
-        public override string ToString() => Target + " = " + Operands[0];
+        Target = target;
     }
+}
 
-    public class Add : InstructionWithTarget
-    {
-        public Add(Var target, Value value1, Value value2)
-            : base(target, value1, value2)
-        { }
+public class Jmp : JmpInstruction
+{
+    public Jmp(Label target, params Value[] values)
+        : base(target, values)
+    { }
 
-        public override string ToString() => Target + " = " + Operands[0] + " + " + Operands[1];
-    }
+    public override string ToString() => "JMP " + Target;
+}
 
-    public class Label : Instruction
-    {
-        public string Name { get; set; }
+public class Je : Jmp
+{
+    public Je(Value value1, Value value2, Label target)
+        : base(target, value1, value2)
+    { }
 
-        public Label(string name)
-        {
-            Name = name;
-        }
+    public override string ToString() => "IF " + Operands[0] + " = " + Operands[1] + ": " + Target;
+}
 
-        public override string ToString() => Name;
-    }
+public class Jne : Jmp
+{
+    public Jne(Value value1, Value value2, Label target)
+        : base(target, value1, value2)
+    { }
 
-    public abstract class JmpInstruction : InstructionWithOperands
-    {
-        public Label Target { get; set; }
+    public override string ToString() => "IF " + Operands[0] + " != " + Operands[1] + ": " + Target;
+}
 
-        public JmpInstruction(Label target, params Value[] operands)
-            : base(operands)
-        {
-            Target = target;
-        }
-    }
+public class Jg : Jmp
+{
+    public Jg(Value value1, Value value2, Label target)
+        : base(target, value1, value2)
+    { }
 
-    public class Jmp : JmpInstruction
-    {
-        public Jmp(Label target, params Value[] values)
-            : base(target, values)
-        { }
+    public override string ToString() => "IF " + Operands[0] + " > " + Operands[1] + ": " + Target;
+}
 
-        public override string ToString() => "JMP " + Target;
-    }
+public class Jl : Jmp
+{
+    public Jl(Value value1, Value value2, Label target)
+        : base(target, value1, value2)
+    { }
 
-    public class Je : Jmp
-    {
-        public Je(Value value1, Value value2, Label target)
-            : base(target, value1, value2)
-        { }
+    public override string ToString() => "IF " + Operands[0] + " < " + Operands[1] + ": " + Target;
+}
 
-        public override string ToString() => "IF " + Operands[0] + " = " + Operands[1] + ": " + Target;
-    }
+public class Jge : Jmp
+{
+    public Jge(Value value1, Value value2, Label target)
+        : base(target, value1, value2)
+    { }
 
-    public class Jne : Jmp
-    {
-        public Jne(Value value1, Value value2, Label target)
-            : base(target, value1, value2)
-        { }
+    public override string ToString() => "IF " + Operands[0] + " >= " + Operands[1] + ": " + Target;
+}
 
-        public override string ToString() => "IF " + Operands[0] + " != " + Operands[1] + ": " + Target;
-    }
+public class Jle : Jmp
+{
+    public Jle(Value value1, Value value2, Label target)
+        : base(target, value1, value2)
+    { }
 
-    public class Jg : Jmp
-    {
-        public Jg(Value value1, Value value2, Label target)
-            : base(target, value1, value2)
-        { }
+    public override string ToString() => "IF " + Operands[0] + " <= " + Operands[1] + ": " + Target;
+}
 
-        public override string ToString() => "IF " + Operands[0] + " > " + Operands[1] + ": " + Target;
-    }
-
-    public class Jl : Jmp
-    {
-        public Jl(Value value1, Value value2, Label target)
-            : base(target, value1, value2)
-        { }
-
-        public override string ToString() => "IF " + Operands[0] + " < " + Operands[1] + ": " + Target;
-    }
-
-    public class Jge : Jmp
-    {
-        public Jge(Value value1, Value value2, Label target)
-            : base(target, value1, value2)
-        { }
-
-        public override string ToString() => "IF " + Operands[0] + " >= " + Operands[1] + ": " + Target;
-    }
-
-    public class Jle : Jmp
-    {
-        public Jle(Value value1, Value value2, Label target)
-            : base(target, value1, value2)
-        { }
-
-        public override string ToString() => "IF " + Operands[0] + " <= " + Operands[1] + ": " + Target;
-    }
-
-    public class Ret : Instruction
-    {
-        public override string ToString() => "RET";
-    }
+public class Ret : Instruction
+{
+    public override string ToString() => "RET";
 }

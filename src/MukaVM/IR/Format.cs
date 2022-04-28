@@ -1,107 +1,106 @@
 using System.Text;
 
-namespace MukaVM.IR
+namespace MukaVM.IR;
+
+public static class Format
 {
-    public static class Format
+    public const string Indentation = "    ";
+
+    public static string Indent(int count)
     {
-        public const string Indentation = "    ";
+        var sb = new StringBuilder();
 
-        public static string Indent(int count)
+        for (var i = 0; i < count; i++)
         {
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < count; i++)
-            {
-                sb.Append(Indentation);
-            }
-
-            return sb.ToString();
+            sb.Append(Indentation);
         }
 
-        public static string FormatSource(string source)
+        return sb.ToString();
+    }
+
+    public static string FormatSource(string source)
+    {
+        var sb = new StringBuilder();
+
+        var atStartOfSource = true;
+        var atStartOfLine = false;
+        var foundSpaces = false;
+        var indentLevel = 0;
+        var insideString = false;
+
+        for (var i = 0; i < source.Length; i++)
         {
-            var sb = new StringBuilder();
-
-            var atStartOfSource = true;
-            var atStartOfLine = false;
-            var foundSpaces = false;
-            var indentLevel = 0;
-            var insideString = false;
-
-            for (var i = 0; i < source.Length; i++)
+            if (atStartOfSource && char.IsWhiteSpace(source[i]))
             {
-                if (atStartOfSource && char.IsWhiteSpace(source[i]))
-                {
-                    continue;
-                }
-
-                atStartOfSource = false;
-
-                if (insideString)
-                {
-                    sb.Append(source[i]);
-                    if (source[i] == '"')
-                    {
-                        insideString = false;
-                    }
-                    continue;
-                }
-
-                if (source[i] == ' ')
-                {
-                    foundSpaces = true;
-                    continue;
-                }
-
-                if (source[i] == '\n' || source[i] == '\r')
-                {
-                    atStartOfLine = true;
-                    foundSpaces = false;
-                    continue;
-                }
-
-                if (!char.IsWhiteSpace(source[i]))
-                {
-                    var shouldIndent = false;
-
-                    if (atStartOfLine)
-                    {
-                        sb.AppendLine();
-                        atStartOfLine = false;
-                        shouldIndent = true;
-                    }
-
-                    if (source[i] == '}')
-                    {
-                        indentLevel--;
-                    }
-
-                    if (shouldIndent)
-                    {
-                        sb.Append(Indent(indentLevel));
-                    }
-                    else if (foundSpaces)
-                    {
-                        sb.Append(' ');
-                    }
-
-                    foundSpaces = false;
-
-                    if (source[i] == '{')
-                    {
-                        indentLevel++;
-                    }
-
-                    sb.Append(source[i]);
-
-                    if (source[i] == '"')
-                    {
-                        insideString = true;
-                    }
-                }
+                continue;
             }
 
-            return sb.ToString();
+            atStartOfSource = false;
+
+            if (insideString)
+            {
+                sb.Append(source[i]);
+                if (source[i] == '"')
+                {
+                    insideString = false;
+                }
+                continue;
+            }
+
+            if (source[i] == ' ')
+            {
+                foundSpaces = true;
+                continue;
+            }
+
+            if (source[i] == '\n' || source[i] == '\r')
+            {
+                atStartOfLine = true;
+                foundSpaces = false;
+                continue;
+            }
+
+            if (!char.IsWhiteSpace(source[i]))
+            {
+                var shouldIndent = false;
+
+                if (atStartOfLine)
+                {
+                    sb.AppendLine();
+                    atStartOfLine = false;
+                    shouldIndent = true;
+                }
+
+                if (source[i] == '}')
+                {
+                    indentLevel--;
+                }
+
+                if (shouldIndent)
+                {
+                    sb.Append(Indent(indentLevel));
+                }
+                else if (foundSpaces)
+                {
+                    sb.Append(' ');
+                }
+
+                foundSpaces = false;
+
+                if (source[i] == '{')
+                {
+                    indentLevel++;
+                }
+
+                sb.Append(source[i]);
+
+                if (source[i] == '"')
+                {
+                    insideString = true;
+                }
+            }
         }
+
+        return sb.ToString();
     }
 }

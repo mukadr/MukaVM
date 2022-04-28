@@ -1,36 +1,35 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MukaVM.IR
+namespace MukaVM.IR;
+
+public class Function
 {
-    public class Function
+    public string Name { get; set; }
+
+    public List<Instruction> Instructions { get; set; }
+
+    public Function(string name, List<Instruction> instructions)
     {
-        public string Name { get; set; }
+        Name = name;
+        Instructions = instructions;
+    }
 
-        public List<Instruction> Instructions { get; set; }
+    public Function(string name)
+        : this(name, new List<Instruction>())
+    { }
 
-        public Function(string name, List<Instruction> instructions)
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("FUNCTION " + Name + " {");
+        foreach (var instruction in Instructions)
         {
-            Name = name;
-            Instructions = instructions;
+            sb.AppendLine(Format.Indent(1) + instruction.ToString());
         }
+        sb.AppendLine("}");
 
-        public Function(string name)
-            : this(name, new List<Instruction>())
-        { }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("FUNCTION " + Name + " {");
-            foreach (var instruction in Instructions)
-            {
-                sb.AppendLine(Format.Indent(1) + instruction.ToString());
-            }
-            sb.AppendLine("}");
-
-            return sb.ToString();
-        }
+        return sb.ToString();
     }
 }
