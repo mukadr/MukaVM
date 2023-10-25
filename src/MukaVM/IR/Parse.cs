@@ -144,7 +144,7 @@ public class Parse
             .Or(labelInstruction);
 
         var functionDefinition =
-            Optional(Whitespace)
+            Optional(SkipWhitespace)
             .And(functionKw.And(identifier.Bind(name =>
                 openBrace.And(ZeroOrMore(instruction).Bind(instructions =>
                     closeBrace.Map(_ =>
