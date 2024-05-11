@@ -119,6 +119,8 @@ public class SSA
     {
         return currentBB.ReachedBy
             .Select(bb => FindOrCreateSSAVariable(bb.Value, var))
+            .GroupBy(v => v.N)
+            .Select(g => g.First())
             .ToList();
     }
 

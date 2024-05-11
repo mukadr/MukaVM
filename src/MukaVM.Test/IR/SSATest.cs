@@ -165,6 +165,55 @@ public class SSATest
     }
 
     [Fact]
+    public void Multiple_Reaching_BasicBlocks_Generates_PHI()
+    {
+        const string sourceText = @"
+            FUNCTION hello {
+                x = 10
+                y = 1
+                again
+                IF x > y: gt
+                x = x + 1
+                IF y > x: done
+                JMP again
+                gt
+                y = y + 3
+                JMP again
+                done
+                RET
+            }";
+
+        const string expected = @"
+            FUNCTION hello {
+                BB1 {
+                    v1 = 10
+                    v2 = 1
+                }
+                BB2 {
+                    v3 = PHI(v1, v5)
+                    v4 = PHI(v2, v6)
+                    IF v3 > v4: BB5
+                }
+                BB3 {
+                    v5 = v3 + 1
+                    IF v4 > v5: BB6
+                }
+                BB4 {
+                    JMP BB2
+                }
+                BB5 {
+                    v6 = v4 + 3
+                    JMP BB2
+                }
+                BB6 {
+                    RET
+                }
+            }";
+
+        Util.AssertSSAEquals(expected, sourceText);
+    }
+
+    [Fact]
     public void Test_With_Multiple_Variables()
     {
         const string sourceText = @"
