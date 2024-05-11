@@ -6,11 +6,15 @@ This is a hobby project that aims to compile a simple intermediate language (IR)
 
 ## Design
 
-Currently it implements a limited number of instructions. Construction of control flow graph and conversion to static single assignment form (SSA) are the main strategies for performing code optimization passes.
+Currently it implements a limited number of instructions.
+
+Construction of control flow graph and conversion to static single assignment form (SSA) are the main strategies for performing code optimization passes.
 
 https://en.wikipedia.org/wiki/Control-flow_graph
 
 https://en.wikipedia.org/wiki/Static_single_assignment_form
+
+https://c9x.me/compile/bib/braun13cc.pdf
 
 ## Roadmap
 
