@@ -18,7 +18,7 @@ public class SSA
     {
         function.BasicBlocks.ForEach(ConvertToSSA);
         function.BasicBlocks.ForEach(UpdatePhiOperands);
-        RemoveUselessPhi(function);
+        RemoveTrivialPhis(function);
     }
 
     private void ConvertToSSA(BasicBlock bb)
@@ -81,10 +81,10 @@ public class SSA
         var phiTarget = InsertSSAVariable(bb, var);
         var phiOperands = LookupPhiOperands(bb, var);
 
-        var ssaVarWithoutPhi = RemoveUnneededPhi(bb, phiOperands);
-        if (ssaVarWithoutPhi is not null)
+        var existingVar = DiscardTrivialPhi(bb, phiOperands);
+        if (existingVar is not null)
         {
-            return ssaVarWithoutPhi;
+            return existingVar;
         }
 
         bb.Phis.Add(new Phi(phiTarget, phiOperands));
@@ -98,7 +98,7 @@ public class SSA
         return ssaVar;
     }
 
-    private SSAVar? RemoveUnneededPhi(BasicBlock bb, List<SSAVar> operands)
+    private SSAVar? DiscardTrivialPhi(BasicBlock bb, List<SSAVar> operands)
     {
         var firstOperand = operands.First();
         if (operands.All(o => o == firstOperand))
@@ -157,23 +157,23 @@ public class SSA
     }
 
     // Remove PHI containing at most one operand
-    private static void RemoveUselessPhi(CfgFunction function)
+    private static void RemoveTrivialPhis(CfgFunction function)
     {
         while (true)
         {
-            var uselessPhi = FindUselessPhi(function);
-            if (uselessPhi is null)
+            var trivial = FindTrivialPhi(function);
+            if (trivial is null)
             {
                 break;
             }
 
-            uselessPhi.Value.bb.Phis.Remove(uselessPhi.Value.phi);
+            trivial.Value.bb.Phis.Remove(trivial.Value.phi);
 
-            ReplaceOperandWith(function, uselessPhi.Value.phi.Target, uselessPhi.Value.replaceWith);
+            ReplaceOperandWith(function, trivial.Value.phi.Target, trivial.Value.replaceWith);
         }
     }
 
-    private static (BasicBlock bb, Phi phi, Value replaceWith)? FindUselessPhi(CfgFunction function)
+    private static (BasicBlock bb, Phi phi, Value replaceWith)? FindTrivialPhi(CfgFunction function)
     {
         foreach (var bb in function.BasicBlocks)
         {
