@@ -1,6 +1,7 @@
 using System.Text;
 using MukaVM.IR;
 using Xunit;
+using Xunit.Sdk;
 
 namespace MukaVM.Test.IR;
 
@@ -37,13 +38,12 @@ C D
 }
 }";
 
-        var expected = new StringBuilder();
-        expected.AppendLine("FUNCTION f {");
-        expected.AppendLine(Format.Indent(1) + "BB1 {");
-        expected.AppendLine(Format.Indent(2) + "A B");
-        expected.AppendLine(Format.Indent(2) + "C D");
-        expected.AppendLine(Format.Indent(1) + "}");
-        expected.Append('}');
+        const string expected = @"FUNCTION f {
+    BB1 {
+        A B
+        C D
+    }
+}";
 
         Assert.Equal(expected.ToString(), Format.FormatSource(actual));
     }
@@ -59,31 +59,29 @@ C D
                     }
                             }";
 
-        var expected = new StringBuilder();
-        expected.AppendLine("FUNCTION f {");
-        expected.AppendLine(Format.Indent(1) + "BB1 {");
-        expected.AppendLine(Format.Indent(2) + "A B");
-        expected.AppendLine(Format.Indent(2) + "C D");
-        expected.AppendLine(Format.Indent(1) + "}");
-        expected.Append('}');
+        const string expected = @"FUNCTION f {
+    BB1 {
+        A B
+        C D
+    }
+}";
 
         Assert.Equal(expected.ToString(), Format.FormatSource(actual));
     }
 
     [Fact]
-    public void FormatSource_RespectStrings()
+    public void FormatSource_KeepSpacesInStrings()
     {
         const string actual = @"
             BB1 {
-                WRITE " + "\"  Hello  World  \"" + @"
+                WRITE ""  Hello  World  ""
                 RET
             }";
 
-        var expected = new StringBuilder();
-        expected.AppendLine("BB1 {");
-        expected.AppendLine(Format.Indent(1) + "WRITE \"  Hello  World  \"");
-        expected.AppendLine(Format.Indent(1) + "RET");
-        expected.Append('}');
+        const string expected = @"BB1 {
+    WRITE ""  Hello  World  ""
+    RET
+}";
 
         Assert.Equal(expected.ToString(), Format.FormatSource(actual));
     }
