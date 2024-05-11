@@ -192,16 +192,15 @@ public class SSATest
                 BB2 {
                     v4 = PHI(v1, v8)
                     v5 = PHI(v3, v7)
-                    v6 = PHI(v2, v6)
                     IF v4 > 9: BB4
                 }
                 BB3 {
-                    v7 = v5 + v6
+                    v7 = v5 + v2
                     v8 = v4 + 1
                     JMP BB2
                 }
                 BB4 {
-                    v9 = v5 + v6
+                    v9 = v5 + v2
                     RET
                 }
             }";

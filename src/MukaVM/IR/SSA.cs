@@ -18,6 +18,7 @@ public class SSA
     {
         function.BasicBlocks.ForEach(ConvertToSSA);
         function.BasicBlocks.ForEach(UpdatePhiOperands);
+        RemoveUselessPhi(function);
     }
 
     private void ConvertToSSA(BasicBlock bb)
@@ -153,5 +154,60 @@ public class SSA
         }
 
         return ssaVar;
+    }
+
+    // Remove PHI containing at most one operand
+    private static void RemoveUselessPhi(CfgFunction function)
+    {
+        while (true)
+        {
+            var uselessPhi = FindUselessPhi(function);
+            if (uselessPhi is null)
+            {
+                break;
+            }
+
+            uselessPhi.Value.bb.Phis.Remove(uselessPhi.Value.phi);
+
+            ReplaceOperandWith(function, uselessPhi.Value.phi.Target, uselessPhi.Value.replaceWith);
+        }
+    }
+
+    private static (BasicBlock bb, Phi phi, Value replaceWith)? FindUselessPhi(CfgFunction function)
+    {
+        foreach (var bb in function.BasicBlocks)
+        {
+            foreach (var phi in bb.Phis)
+            {
+                if (phi.Operands.Count(o => o != phi.Target) <= 1)
+                {
+                    var newTarget = phi.Operands.Single(o => o != phi.Target);
+
+                    return (bb, phi, newTarget);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static void ReplaceOperandWith(CfgFunction function, Value oldOperand, Value newOperand)
+    {
+        foreach (var bb in function.BasicBlocks)
+        {
+            foreach (var ins in bb.Instructions)
+            {
+                if (ins is InstructionWithOperands io)
+                {
+                    for (var i = 0; i < io.Operands.Length; i++)
+                    {
+                        if (io.Operands[i] == oldOperand)
+                        {
+                            io.Operands[i] = newOperand;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
