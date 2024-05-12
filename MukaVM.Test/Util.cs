@@ -7,14 +7,16 @@ internal static class Util
 {
     internal static void AssertControlFlowGraphEquals(string expected, string actual)
     {
-        AssertSourceEquals(expected, CFG.Convert(Parse.FromSourceText(actual)).ConvertToString(true));
+        var cfgFunction = MukaVM.IR.CFG.Transform.ToControlFlowGraph(Parse.FromSourceText(actual));
+
+        AssertSourceEquals(expected, cfgFunction.ConvertToString(true));
     }
 
     internal static void AssertSSAEquals(string expected, string actual)
     {
-        var cfgFunction = CFG.Convert(Parse.FromSourceText(actual));
+        var cfgFunction = MukaVM.IR.CFG.Transform.ToControlFlowGraph(Parse.FromSourceText(actual));
 
-        SSA.Transform(cfgFunction);
+        MukaVM.IR.SSA.Transform.ToSSAForm(cfgFunction);
 
         AssertSourceEquals(expected, cfgFunction.ToString());
     }

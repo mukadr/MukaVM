@@ -1,29 +1,37 @@
+using MukaVM.IR.CFG;
+using MukaVM.IR.Instructions;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MukaVM.IR;
+namespace MukaVM.IR.SSA;
 
-public class SSA
+public class Transform
 {
     private int _variableNumber = 1;
 
-    private SSA() { }
+    private Transform() { }
 
-    public static void Transform(CfgFunction function)
+    public static void ToSSAForm(CfgFunction function)
     {
-        new SSA().TransformFunction(function);
+        new Transform().TransformFunction(function);
     }
 
     private void TransformFunction(CfgFunction function)
     {
-        function.BasicBlocks.ForEach(ConvertToSSA);
-        function.BasicBlocks.ForEach(UpdatePhiOperands);
+        InsertSSAVariables(function);
+        UpdatePhiOperands(function);
         RemoveTrivialPhis(function);
     }
 
-    private void ConvertToSSA(BasicBlock bb)
+    private void InsertSSAVariables(CfgFunction function)
     {
-        bb.Instructions.ForEach(i => UpdateSSAVariablesForInstruction(bb, i));
+        foreach (var bb in function.BasicBlocks)
+        {
+            foreach (var i in bb.Instructions)
+            {
+                UpdateSSAVariablesForInstruction(bb, i);
+            }
+        }
     }
 
     private void UpdateSSAVariablesForInstruction(BasicBlock bb, Instruction instruction)
@@ -67,7 +75,6 @@ public class SSA
 
     private SSAVar CreateSSAVariable(BasicBlock bb, Var var)
     {
-        // Single predecessor, no PHI needed
         if (bb.ReachedBy.Count == 1)
         {
             return FindOrCreateSSAVariable(bb.ReachedBy.Single().Value, var);
@@ -80,8 +87,8 @@ public class SSA
     {
         var phiTarget = InsertSSAVariable(bb, var);
         var phiOperands = LookupPhiOperands(bb, var);
-
         var existingVar = DiscardTrivialPhi(bb, phiOperands);
+
         if (existingVar is not null)
         {
             return existingVar;
@@ -103,13 +110,13 @@ public class SSA
         var firstOperand = operands.First();
         if (operands.All(o => o == firstOperand))
         {
-            DiscardLastSSAVariable(bb, firstOperand.Var.Name);
+            DiscardCurrentSSAVariable(bb, firstOperand.Var.Name);
             return firstOperand;
         }
         return null;
     }
 
-    private void DiscardLastSSAVariable(BasicBlock bb, string varName)
+    private void DiscardCurrentSSAVariable(BasicBlock bb, string varName)
     {
         bb.SSAVariables.Remove(varName);
         _variableNumber--;
@@ -124,17 +131,18 @@ public class SSA
             .ToList();
     }
 
-    private void UpdatePhiOperands(BasicBlock bb)
+    private void UpdatePhiOperands(CfgFunction function)
     {
-        foreach (var phi in bb.Phis)
+        foreach (var bb in function.BasicBlocks)
         {
-            for (var i = 0; i < phi.Operands.Count; i++)
+            foreach (var phi in bb.Phis)
             {
-                // If target is inside operand list, we have a loop
-                // Update operand with the latest SSA variable
-                if (phi.Operands[i] == phi.Target)
+                for (var i = 0; i < phi.Operands.Count; i++)
                 {
-                    phi.Operands[i] = FindLatestSSAVar(bb, phi.Operands[i], new[] { bb });
+                    if (phi.Operands[i] == phi.Target)
+                    {
+                        phi.Operands[i] = FindLatestSSAVar(bb, phi.Operands[i], [bb]);
+                    }
                 }
             }
         }
@@ -151,7 +159,7 @@ public class SSA
 
             if (!visited.Contains(bb.Value))
             {
-                ssaVar = FindLatestSSAVar(bb.Value, ssaVar, visited.Concat(new[] { bb.Value }));
+                ssaVar = FindLatestSSAVar(bb.Value, ssaVar, visited.Concat([bb.Value]));
             }
         }
 

@@ -1,3 +1,4 @@
+using MukaVM.IR.Instructions;
 using System.Collections.Generic;
 using System.Text;
 
@@ -24,10 +25,12 @@ public class Function
         var sb = new StringBuilder();
 
         sb.AppendLine("FUNCTION " + Name + " {");
+
         foreach (var instruction in Instructions)
         {
             sb.AppendLine(Format.Indent(1) + instruction.ToString());
         }
+
         sb.AppendLine("}");
 
         return sb.ToString();
