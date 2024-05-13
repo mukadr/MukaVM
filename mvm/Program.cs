@@ -1,4 +1,4 @@
-﻿using MukaVM.IR;
+using MukaVM.IR;
 
 if (args.Length < 1)
 {
@@ -8,7 +8,7 @@ if (args.Length < 1)
 
 var sourceText = File.ReadAllText(args[0]);
 
-var cfg = CFG.Convert(Parse.FromSourceText(sourceText));
-SSA.Transform(cfg);
+var cfg = MukaVM.IR.CFG.Transform.ToControlFlowGraph(Parse.FromSourceText(sourceText));
+MukaVM.IR.SSA.Transform.ToSSAForm(cfg);
 
 Console.WriteLine(Format.FormatSource(cfg.ToString()));
