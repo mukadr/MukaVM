@@ -3,16 +3,11 @@ using System.Text;
 
 namespace MukaVM.IR.CFG;
 
-public class CfgFunction
+public class CfgFunction(string name)
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = name;
 
     public List<BasicBlock> BasicBlocks { get; set; } = new();
-
-    public CfgFunction(string name)
-    {
-        Name = name;
-    }
 
     public override string ToString() => ConvertToString();
 

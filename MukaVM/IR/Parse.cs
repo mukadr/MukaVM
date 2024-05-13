@@ -8,12 +8,7 @@ namespace MukaVM.IR;
 
 public class Parse
 {
-    private sealed class JmpTarget : Label
-    {
-        public JmpTarget(string name)
-            : base(name)
-        { }
-    }
+    private sealed class JmpTarget(string name) : Label(name) { }
 
     public static Function FromSourceText(string sourceText)
     {

@@ -4,17 +4,11 @@ using System.Text;
 
 namespace MukaVM.IR;
 
-public class Function
+public class Function(string name, List<Instruction> instructions)
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = name;
 
-    public List<Instruction> Instructions { get; set; }
-
-    public Function(string name, List<Instruction> instructions)
-    {
-        Name = name;
-        Instructions = instructions;
-    }
+    public List<Instruction> Instructions { get; set; } = instructions;
 
     public Function(string name)
         : this(name, new List<Instruction>())

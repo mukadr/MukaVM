@@ -2,30 +2,18 @@ namespace MukaVM.IR;
 
 public abstract class Value { }
 
-public class Var : Value
+public class Var(string name) : Value
 {
-    public string Name { get; set; }
-
-    public Var(string name)
-    {
-        Name = name;
-    }
+    public string Name { get; set; } = name;
 
     public override string ToString() => Name;
 }
 
-public class SSAVar : Var
+public class SSAVar(int n, Var var) : Var("v" + n.ToString())
 {
-    public Var Var { get; }
+    public Var Var { get; } = var;
 
-    public int N { get; }
-
-    public SSAVar(int n, Var var)
-        : base("v" + n.ToString())
-    {
-        N = n;
-        Var = var;
-    }
+    public int N { get; } = n;
 }
 
 public class Int : Value

@@ -4,14 +4,9 @@ namespace MukaVM.IR.Instructions;
 
 public abstract class Instruction { }
 
-public abstract class InstructionWithOperands : Instruction
+public abstract class InstructionWithOperands(params Value[] operands) : Instruction
 {
-    public Value[] Operands { get; set; }
-
-    public InstructionWithOperands(params Value[] operands)
-    {
-        Operands = operands;
-    }
+    public Value[] Operands { get; set; } = operands;
 
     public static InstructionWithOperands CreateIfInstruction(Value left, string op, Value right, Label target)
     {
@@ -28,13 +23,7 @@ public abstract class InstructionWithOperands : Instruction
     }
 }
 
-public abstract class InstructionWithTarget : InstructionWithOperands
+public abstract class InstructionWithTarget(Var target, params Value[] operands) : InstructionWithOperands(operands)
 {
-    public Var Target { get; set; }
-
-    public InstructionWithTarget(Var target, params Value[] operands)
-        : base(operands)
-    {
-        Target = target;
-    }
+    public Var Target { get; set; } = target;
 }

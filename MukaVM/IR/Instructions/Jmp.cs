@@ -1,76 +1,41 @@
 namespace MukaVM.IR.Instructions;
 
-public abstract class JmpInstruction : InstructionWithOperands
+public abstract class JmpInstruction(Label target, params Value[] operands) : InstructionWithOperands(operands)
 {
-    public Label Target { get; set; }
-
-    public JmpInstruction(Label target, params Value[] operands)
-        : base(operands)
-    {
-        Target = target;
-    }
+    public Label Target { get; set; } = target;
 }
 
-public class Jmp : JmpInstruction
+public class Jmp(Label target, params Value[] values) : JmpInstruction(target, values)
 {
-    public Jmp(Label target, params Value[] values)
-        : base(target, values)
-    { }
-
     public override string ToString() => "JMP " + Target;
 }
 
-
-public class Je : Jmp
+public class Je(Value value1, Value value2, Label target) : Jmp(target, value1, value2)
 {
-    public Je(Value value1, Value value2, Label target)
-        : base(target, value1, value2)
-    { }
-
     public override string ToString() => "IF " + Operands[0] + " = " + Operands[1] + ": " + Target;
 }
 
-public class Jne : Jmp
+public class Jne(Value value1, Value value2, Label target) : Jmp(target, value1, value2)
 {
-    public Jne(Value value1, Value value2, Label target)
-        : base(target, value1, value2)
-    { }
-
     public override string ToString() => "IF " + Operands[0] + " != " + Operands[1] + ": " + Target;
 }
 
-public class Jg : Jmp
+public class Jg(Value value1, Value value2, Label target) : Jmp(target, value1, value2)
 {
-    public Jg(Value value1, Value value2, Label target)
-        : base(target, value1, value2)
-    { }
-
     public override string ToString() => "IF " + Operands[0] + " > " + Operands[1] + ": " + Target;
 }
 
-public class Jl : Jmp
+public class Jl(Value value1, Value value2, Label target) : Jmp(target, value1, value2)
 {
-    public Jl(Value value1, Value value2, Label target)
-        : base(target, value1, value2)
-    { }
-
     public override string ToString() => "IF " + Operands[0] + " < " + Operands[1] + ": " + Target;
 }
 
-public class Jge : Jmp
+public class Jge(Value value1, Value value2, Label target) : Jmp(target, value1, value2)
 {
-    public Jge(Value value1, Value value2, Label target)
-        : base(target, value1, value2)
-    { }
-
     public override string ToString() => "IF " + Operands[0] + " >= " + Operands[1] + ": " + Target;
 }
 
-public class Jle : Jmp
+public class Jle(Value value1, Value value2, Label target) : Jmp(target, value1, value2)
 {
-    public Jle(Value value1, Value value2, Label target)
-        : base(target, value1, value2)
-    { }
-
     public override string ToString() => "IF " + Operands[0] + " <= " + Operands[1] + ": " + Target;
 }

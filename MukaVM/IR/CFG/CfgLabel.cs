@@ -2,13 +2,7 @@ using MukaVM.IR.Instructions;
 
 namespace MukaVM.IR.CFG;
 
-public class CfgLabel : Label
+public class CfgLabel(BasicBlock basicBlock) : Label(basicBlock.Name)
 {
-    public BasicBlock BasicBlock { get; set; }
-
-    public CfgLabel(BasicBlock basicBlock)
-        : base(basicBlock.Name)
-    {
-        BasicBlock = basicBlock;
-    }
+    public BasicBlock BasicBlock { get; set; } = basicBlock;
 }
