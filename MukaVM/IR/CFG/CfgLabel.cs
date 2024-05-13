@@ -1,5 +1,3 @@
-using MukaVM.IR.Instructions;
-
 namespace MukaVM.IR.CFG;
 
 public class CfgLabel(BasicBlock basicBlock) : Label(basicBlock.Name)

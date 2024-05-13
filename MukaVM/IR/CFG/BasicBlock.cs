@@ -1,4 +1,3 @@
-using MukaVM.IR.Instructions;
 using MukaVM.IR.SSA;
 using System.Collections.Generic;
 using System.Linq;

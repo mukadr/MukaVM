@@ -1,4 +1,3 @@
-using MukaVM.IR.Instructions;
 using System.Linq;
 
 namespace MukaVM.IR.CFG;

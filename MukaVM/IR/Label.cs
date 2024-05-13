@@ -1,4 +1,4 @@
-namespace MukaVM.IR.Instructions;
+namespace MukaVM.IR;
 
 public class Label(string name) : Instruction
 {

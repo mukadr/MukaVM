@@ -1,6 +1,6 @@
 using System;
 
-namespace MukaVM.IR.Instructions;
+namespace MukaVM.IR;
 
 public abstract class Instruction { }
 

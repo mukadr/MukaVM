@@ -1,4 +1,4 @@
-namespace MukaVM.IR.Instructions;
+namespace MukaVM.IR;
 
 public class Add(Var target, Value value1, Value value2) : InstructionWithTarget(target, value1, value2)
 {

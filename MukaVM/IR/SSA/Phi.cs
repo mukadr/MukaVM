@@ -1,4 +1,3 @@
-using MukaVM.IR.Instructions;
 using System.Collections.Generic;
 
 namespace MukaVM.IR.SSA;

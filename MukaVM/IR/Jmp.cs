@@ -1,4 +1,4 @@
-namespace MukaVM.IR.Instructions;
+namespace MukaVM.IR;
 
 public abstract class JmpInstruction(Label target, params Value[] operands) : InstructionWithOperands(operands)
 {

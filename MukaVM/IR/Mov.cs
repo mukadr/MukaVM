@@ -1,4 +1,4 @@
-namespace MukaVM.IR.Instructions;
+namespace MukaVM.IR;
 
 public class Mov(Var target, Value value) : InstructionWithTarget(target, value)
 {
