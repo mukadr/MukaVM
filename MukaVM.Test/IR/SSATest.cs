@@ -256,4 +256,53 @@ public class SSATest
 
         Util.AssertSSAEquals(expected, sourceText);
     }
+
+    [Fact]
+    public void Test_Fibonacci_Example()
+    {
+        const string sourceText = @"
+            FUNCTION fibo {
+                n1 = 0
+                n2 = 1
+                count = 10
+                i = 2
+                loop
+                IF i = count: exit
+                n3 = n1 + n2
+                n1 = n2
+                n2 = n3
+                i = i + 1
+                JMP loop
+                exit
+                RET
+            }";
+
+        const string expected = @"
+            FUNCTION fibo {
+                BB1 {
+                    v1 = 0
+                    v2 = 1
+                    v3 = 10
+                    v4 = 2
+                }
+                BB2 {
+                    v5 = PHI(v4, v12)
+                    v7 = PHI(v1, v10)
+                    v8 = PHI(v2, v11)
+                    IF v5 = v3: BB4
+                }
+                BB3 {
+                    v9 = v7 + v8
+                    v10 = v8
+                    v11 = v9
+                    v12 = v5 + 1
+                    JMP BB2
+                }
+                BB4 {
+                    RET
+                }
+            }";
+
+        Util.AssertSSAEquals(expected, sourceText);
+    }
 }
