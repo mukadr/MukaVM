@@ -1,7 +1,5 @@
-using System.Text;
 using MukaVM.IR;
 using Xunit;
-using Xunit.Sdk;
 
 namespace MukaVM.Test.IR;
 
