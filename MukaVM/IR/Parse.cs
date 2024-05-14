@@ -83,6 +83,7 @@ public class Parse
         var ifKw = Token("IF");
         var jmpKw = Token("JMP");
         var retKw = Token("RET");
+        var printKw = Token("PRINT");
         var assign = Token("=");
         var plus = Token("+");
         var eq = Token("=");
@@ -130,12 +131,17 @@ public class Parse
         var retInstruction =
             retKw.Map<Instruction>(_ => new Ret());
 
+        var printInstruction =
+            printKw.And(argument.Map<Instruction>(value =>
+                new Print(value)));
+
         var instruction =
             jmpInstruction
             .Or(ifInstruction)
             .Or(retInstruction)
             .Or(addInstruction)
             .Or(movInstruction)
+            .Or(printInstruction)
             .Or(labelInstruction);
 
         var functionDefinition =

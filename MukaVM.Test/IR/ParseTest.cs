@@ -100,6 +100,19 @@ public class ParseTest
     }
 
     [Fact]
+    public void FromSourceText_Parses_Print()
+    {
+        const string sourceText = @"
+            FUNCTION printWorks {
+                PRINT 10
+                x = 33
+                PRINT x
+            }";
+
+        Util.AssertSourceEquals(sourceText, Parse.FromSourceText(sourceText).ToString());
+    }
+
+    [Fact]
     public void FromSourceText_Throws_When_Variable_Not_Found()
     {
         const string sourceText = @"
