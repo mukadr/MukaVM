@@ -29,7 +29,7 @@ https://c9x.me/compile/bib/braun13cc.pdf
 
 ### Intermediate representation (IR)
 
-Available instructions: assignment, addition, jump, conditional jump, label, return
+Available instructions: assignment, addition, jump, conditional jump, label, print, return
 
 Fibonacci sequence example:
 
@@ -39,9 +39,11 @@ FUNCTION f {
     n2 = 1
     count = 10
     i = 2
+    PRINT 1
     loop
     IF i = count: exit
     n3 = n1 + n2
+    PRINT n3
     n1 = n2
     n2 = n3
     JMP loop
@@ -59,6 +61,7 @@ FUNCTION f {
         v2 = 1
         v3 = 10
         v4 = 2
+        PRINT 1
     }
     BB2 {
         v5 = PHI(v4, v12)
@@ -68,6 +71,7 @@ FUNCTION f {
     }
     BB3 {
         v9 = v7 + v8
+        PRINT v9
         v10 = v8
         v11 = v9
         v12 = v5 + 1
