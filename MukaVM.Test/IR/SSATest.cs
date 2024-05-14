@@ -266,9 +266,11 @@ public class SSATest
                 n2 = 1
                 count = 10
                 i = 2
+                PRINT 1
                 loop
                 IF i = count: exit
                 n3 = n1 + n2
+                PRINT n3
                 n1 = n2
                 n2 = n3
                 i = i + 1
@@ -284,6 +286,7 @@ public class SSATest
                     v2 = 1
                     v3 = 10
                     v4 = 2
+                    PRINT 1
                 }
                 BB2 {
                     v5 = PHI(v4, v12)
@@ -293,6 +296,7 @@ public class SSATest
                 }
                 BB3 {
                     v9 = v7 + v8
+                    PRINT v9
                     v10 = v8
                     v11 = v9
                     v12 = v5 + 1
